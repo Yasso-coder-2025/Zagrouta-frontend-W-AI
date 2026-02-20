@@ -26,6 +26,15 @@ export default function Home() {
               استكشفي الخدمات
             </Link>
           </div>
+          <div className="mt-8 flex justify-center">
+            <a 
+              href="/project_code.tar.gz" 
+              download 
+              className="text-pink-600 font-bold hover:underline flex items-center gap-2"
+            >
+              📥 تحميل كود المشروع (React + Vite)
+            </a>
+          </div>
         </div>
       </header>
 

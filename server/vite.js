@@ -3,6 +3,9 @@ import viteConfig from "../vite.config.js";
 import fs from "fs";
 import path from "path";
 import { nanoid } from "nanoid";
+
+const currentDir = typeof __dirname !== 'undefined' ? __dirname : process.cwd();
+
 const viteLogger = createLogger();
 export async function setupVite(server, app) {
     const serverOptions = {
@@ -27,7 +30,9 @@ export async function setupVite(server, app) {
     app.use("/{*path}", async (req, res, next) => {
         const url = req.originalUrl;
         try {
-            const clientTemplate = path.resolve(import.meta.dirname, "..", "client", "index.html");
+            // Note: in dev mode, currentDir might be process.cwd()/server. In prod, it's process.cwd()/dist
+            // But this route is only hit in dev mode (setupVite is not called in prod).
+            const clientTemplate = path.resolve(process.cwd(), "client", "index.html");
             // always reload the index.html file from disk incase it changes
             let template = await fs.promises.readFile(clientTemplate, "utf-8");
             template = template.replace(`src="/src/main.tsx"`, `src="/src/main.tsx?v=${nanoid()}"`);

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Calendar, Heart, Settings, LogOut, X } from "lucide-react";
 import { useAuth } from "../hooks/use-auth";
+import { getApiBaseUrl } from "../utils/api";
 
 export default function UserProfile() {
     const { user, login } = useAuth();
@@ -28,7 +29,7 @@ export default function UserProfile() {
       setUpdateStatus({ type: '', message: '' });
 
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}/users/update`, {
+        const res = await fetch(`${getApiBaseUrl()}/users/update`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

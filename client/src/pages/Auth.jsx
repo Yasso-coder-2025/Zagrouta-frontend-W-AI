@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "../hooks/use-auth";
+import { getApiBaseUrl } from "../utils/api";
 
 // Triggering a fresh Vercel Build (Cache Bust)
 
@@ -48,7 +49,7 @@ export default function Auth() {
       setIsLoading(true);
 
       try {
-        const loginRes = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}/users/login`, {
+        const loginRes = await fetch(`${getApiBaseUrl()}/users/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: loginEmail, password: loginPassword })
@@ -96,7 +97,7 @@ export default function Auth() {
       setIsLoading(true);
 
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}/users/register`, {
+        const res = await fetch(`${getApiBaseUrl()}/users/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -149,7 +150,7 @@ export default function Auth() {
       setIsLoading(true);
 
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}/users/update-password`, {
+        const res = await fetch(`${getApiBaseUrl()}/users/update-password`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

@@ -14,10 +14,7 @@ export default function UserProfile() {
     const [isUpdating, setIsUpdating] = useState(false);
 
     // Construct the correct base URL explicitly if from Vercel
-    const rawApiUrl = import.meta.env.VITE_API_BASE_URL || "localhost:8080";
-    const API_URL = rawApiUrl.includes("localhost") 
-      ? "http://localhost:8080/api" 
-      : `https://${rawApiUrl}/api`;
+    const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
     const switchTab = (tab) => setActiveTab(tab);
 

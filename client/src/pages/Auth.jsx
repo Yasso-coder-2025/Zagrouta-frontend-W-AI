@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "../hooks/use-auth";
+import { API_URL } from "../config";
 
 // Triggering a fresh Vercel Build (Cache Bust)
 
@@ -27,9 +28,6 @@ export default function Auth() {
     const [tab, setTab] = useState('login');
     const { login } = useAuth();
     const [, setLocation] = useLocation();
-    
-    // Construct the correct base URL explicitly if from Vercel
-    const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
     // Form states
     const [loginEmail, setLoginEmail] = useState("");

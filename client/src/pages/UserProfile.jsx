@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Calendar, Heart, Settings, LogOut, X } from "lucide-react";
 import { useAuth } from "../hooks/use-auth";
+import { API_URL } from "../config";
 
 export default function UserProfile() {
     const { user, login } = useAuth();
@@ -12,9 +13,6 @@ export default function UserProfile() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [updateStatus, setUpdateStatus] = useState({ type: '', message: '' });
     const [isUpdating, setIsUpdating] = useState(false);
-
-    // Construct the correct base URL explicitly if from Vercel
-    const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
     const switchTab = (tab) => setActiveTab(tab);
 

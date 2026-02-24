@@ -46,7 +46,7 @@ export default function Auth() {
       setIsLoading(true);
 
       try {
-        const loginRes = await fetch('`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}`/users/login', {
+        const loginRes = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}/users/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: loginEmail, password: loginPassword })
@@ -94,7 +94,7 @@ export default function Auth() {
       setIsLoading(true);
 
       try {
-        const res = await fetch('`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}`/users/register', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}/users/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -147,7 +147,7 @@ export default function Auth() {
       setIsLoading(true);
 
       try {
-        const res = await fetch('`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}`/users/update-password', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}/users/update-password`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

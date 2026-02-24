@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "../hooks/use-auth";
 
+// Triggering a fresh Vercel Build (Cache Bust)
+
 // Components for Dialog/Popup 
 const Popup = ({ isOpen, onClose, title, message }) => {
   if (!isOpen) return null;

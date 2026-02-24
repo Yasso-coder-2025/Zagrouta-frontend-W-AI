@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "../hooks/use-auth";
-import { getApiBaseUrl } from "../utils/api";
 
 // Triggering a fresh Vercel Build (Cache Bust)
 
@@ -28,6 +27,12 @@ export default function Auth() {
     const [tab, setTab] = useState('login');
     const { login } = useAuth();
     const [, setLocation] = useLocation();
+    
+    // Construct the correct base URL explicitly if from Vercel
+    const rawApiUrl = import.meta.env.VITE_API_BASE_URL || "localhost:8080";
+    const API_URL = rawApiUrl.includes("localhost") 
+      ? "http://localhost:8080/api" 
+      : `https://${rawApiUrl}/api`;
 
     // Form states
     const [loginEmail, setLoginEmail] = useState("");
@@ -49,7 +54,7 @@ export default function Auth() {
       setIsLoading(true);
 
       try {
-        const loginRes = await fetch(`${getApiBaseUrl()}/users/login`, {
+        const loginRes = await fetch(`${API_URL}/users/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: loginEmail, password: loginPassword })
@@ -97,7 +102,7 @@ export default function Auth() {
       setIsLoading(true);
 
       try {
-        const res = await fetch(`${getApiBaseUrl()}/users/register`, {
+        const res = await fetch(`${API_URL}/users/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -150,7 +155,7 @@ export default function Auth() {
       setIsLoading(true);
 
       try {
-        const res = await fetch(`${getApiBaseUrl()}/users/update-password`, {
+        const res = await fetch(`${API_URL}/users/update-password`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

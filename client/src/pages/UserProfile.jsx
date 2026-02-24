@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { Calendar, Heart, Settings, LogOut, X } from "lucide-react";
+import { Calendar, Heart, Settings, LogOut, X } from "lucide-react";
 import { useAuth } from "../hooks/use-auth";
-import { getApiBaseUrl } from "../utils/api";
 
 export default function UserProfile() {
     const { user, login } = useAuth();
@@ -13,6 +13,12 @@ export default function UserProfile() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [updateStatus, setUpdateStatus] = useState({ type: '', message: '' });
     const [isUpdating, setIsUpdating] = useState(false);
+
+    // Construct the correct base URL explicitly if from Vercel
+    const rawApiUrl = import.meta.env.VITE_API_BASE_URL || "localhost:8080";
+    const API_URL = rawApiUrl.includes("localhost") 
+      ? "http://localhost:8080/api" 
+      : `https://${rawApiUrl}/api`;
 
     const switchTab = (tab) => setActiveTab(tab);
 
@@ -29,7 +35,7 @@ export default function UserProfile() {
       setUpdateStatus({ type: '', message: '' });
 
       try {
-        const res = await fetch(`${getApiBaseUrl()}/users/update`, {
+        const res = await fetch(`${API_URL}/users/update`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

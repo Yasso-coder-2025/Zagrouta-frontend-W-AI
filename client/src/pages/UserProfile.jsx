@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { Calendar, Heart, Settings, LogOut, X } from "lucide-react";
-import { Calendar, Heart, Settings, LogOut, X } from "lucide-react";
 import { useAuth } from "../hooks/use-auth";
 
 export default function UserProfile() {

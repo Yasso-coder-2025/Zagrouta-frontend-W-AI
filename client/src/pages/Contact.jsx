@@ -1,4 +1,5 @@
-import { MapPin, Mail, MessageCircle } from "lucide-react";
+import { Mail, Phone, MapPin, Send, MessageSquare, MessageCircle } from "lucide-react";
+import { CustomSelect } from "../components/ui/CustomSelect";
 export default function Contact() {
     return (<div className="bg-gray-50 text-gray-800 flex-1 flex flex-col w-full h-full">
       <main className="container mx-auto px-4 py-12 flex-1">
@@ -11,32 +12,31 @@ export default function Contact() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Contact Form */}
-          <div className="bg-white p-8 rounded-3xl shadow-lg border border-pink-50">
+          <div className="bg-white p-8 rounded-3xl shadow-lg border border-border/20">
             <form className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold mb-2">الاسم بالكامل</label>
-                  <input type="text" placeholder="مثلاً: سارة أحمد" className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-primary outline-none"/>
+                  <input type="text" placeholder="مثلاً: سارة أحمد" className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"/>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-2">رقم للتواصل</label>
-                  <input type="tel" placeholder="01XXXXXXXXX" className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-primary outline-none"/>
+                  <input type="tel" placeholder="01XXXXXXXXX" className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"/>
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-2">الموضوع</label>
-                <select className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-primary outline-none">
-                  <option>استفسار عن حجز</option>
-                  <option>مشكلة تقنية في الموقع</option>
-                  <option>طلب انضمام كمورد (Partner)</option>
-                  <option>أخرى</option>
-                </select>
+                <CustomSelect
+                  defaultValue="استفسار عن حجز"
+                  options={["استفسار عن حجز", "مشكلة تقنية في الموقع", "اقتراحات", "أخرى"]}
+                  className="p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] text-gray-700 font-bold hover:border-[#8c71af] transition"
+                />
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-2">رسالتك</label>
-                <textarea rows={5} placeholder="اكتبي تفاصيل استفسارك هنا..." className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-primary outline-none"></textarea>
+                <textarea rows={5} placeholder="اكتبي تفاصيل استفسارك هنا..." className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"></textarea>
               </div>
-              <button type="button" className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold shadow-lg hover:bg-primary-hover transition transform hover:scale-[1.02]">
+              <button type="button" className="w-full bg-gradient-primary text-white py-4 rounded-xl font-bold shadow-lg hover:opacity-90 transition transform hover:scale-[1.02]">
                 إرسال الرسالة
               </button>
             </form>
@@ -44,8 +44,8 @@ export default function Contact() {
 
           {/* Contact Info */}
           <div className="space-y-8">
-            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 border-pink-500">
-              <div className="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center text-primary">
+            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 ">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-pink-50 rounded-full flex items-center justify-center text-[#8c71af]">
                 <MapPin size={28}/>
               </div>
               <div>
@@ -54,8 +54,8 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 border-pink-500">
-              <div className="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center text-primary">
+            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 ">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-pink-50 rounded-full flex items-center justify-center text-[#8c71af]">
                 <Mail size={28}/>
               </div>
               <div>
@@ -64,8 +64,8 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 border-pink-500">
-              <div className="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center text-primary">
+            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 ">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-pink-50 rounded-full flex items-center justify-center text-[#8c71af]">
                 <MessageCircle size={28}/>
               </div>
               <div>

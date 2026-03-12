@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "wouter";
+import { CustomSelect } from "../components/ui/CustomSelect";
 export default function ServiceDetails() {
     const { id } = useParams();
     const images = [
@@ -20,8 +21,8 @@ export default function ServiceDetails() {
     return (<>
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-3 text-sm text-gray-500 flex items-center gap-2">
-          <Link href="/" className="hover:text-primary">الرئيسية</Link> <span>/</span>
-          <Link href="/services" className="hover:text-primary">الخدمات</Link> <span>/</span>
+          <Link href="/" className="hover:text-[#8c71af] transition">الرئيسية</Link> <span>/</span>
+          <Link href="/services" className="hover:text-[#8c71af] transition">الخدمات</Link> <span>/</span>
           <span className="text-gray-800 font-bold">قاعة الماسة الملكية</span>
         </div>
       </div>
@@ -35,10 +36,10 @@ export default function ServiceDetails() {
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
               <div className="h-[400px] overflow-hidden rounded-xl mb-4 relative group">
                 <img src={mainImage} className={`w-full h-full object-cover transition-opacity duration-300 ${animateImage ? 'opacity-50' : 'opacity-100'}`} alt="قاعة الماسة"/>
-                <span className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-bold shadow-md">قاعة مميزة</span>
+                <span className="absolute top-4 right-4 bg-gradient-primary text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">قاعة مميزة</span>
               </div>
               <div className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
-                {images.map((img, idx) => (<img key={idx} onClick={() => handleImageChange(img)} src={img} className={`w-24 h-24 rounded-lg object-cover cursor-pointer border-2 transition-all duration-200 ${mainImage === img ? 'border-primary opacity-100' : 'border-transparent opacity-70 hover:opacity-100 hover:border-primary'}`} alt="Thumbnail"/>))}
+                {images.map((img, idx) => (<img key={idx} onClick={() => handleImageChange(img)} src={img} className={`w-24 h-24 rounded-lg object-cover cursor-pointer border-2 transition-all duration-200 ${mainImage === img ? ' opacity-100' : 'border-transparent opacity-70 hover:opacity-100 hover:'}`} alt="Thumbnail"/>))}
               </div>
             </div>
 
@@ -79,7 +80,7 @@ export default function ServiceDetails() {
               
               <div className="space-y-6">
                 <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center font-bold text-primary">س</div>
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-pink-50 rounded-full flex items-center justify-center font-bold text-[#8c71af]">س</div>
                   <div>
                     <h4 className="font-bold text-gray-800">سارة أحمد</h4>
                     <div className="text-yellow-500 text-xs mb-1">★★★★★</div>
@@ -101,37 +102,40 @@ export default function ServiceDetails() {
 
           {/* Sidebar Action */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-primary-100 sticky top-24">
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-border/20 sticky top-24">
               <div className="flex justify-between items-end mb-6">
                 <div>
                   <span className="text-gray-400 text-sm block">سعر الباقة يبدأ من</span>
-                  <span className="text-3xl font-black text-primary">25,000 ج.م</span>
+                  <span className="text-3xl font-black text-gradient-primary">25,000 ج.م</span>
                 </div>
               </div>
 
               <form className="space-y-4">
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">تاريخ الفرح</label>
-                  <input type="date" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none cursor-pointer"/>
+                  <CustomSelect 
+                    defaultValue="خطوبة"
+                    options={["خطوبة", "عقد قران", "زفاف"]}
+                    className="p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#8c71af] text-gray-700 font-bold hover:border-[#8c71af] transition"
+                  />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">عدد المدعوين (تقريبي)</label>
-                  <select className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none cursor-pointer">
-                    <option>100 - 200 فرد</option>
-                    <option>200 - 300 فرد</option>
-                    <option>300 - 500 فرد</option>
-                    <option>أكثر من 500</option>
-                  </select>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">عدد المدعوين</label>
+                  <CustomSelect 
+                    defaultValue="أقل من 100"
+                    options={["أقل من 100", "100 - 300 شخص", "300 - 500 شخص", "أكثر من 500 شخص"]}
+                    className="p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#8c71af] text-gray-700 font-bold hover:border-[#8c71af] transition"
+                  />
                 </div>
 
                 <Link href="/checkout">
-                  <button type="button" className="mt-4 w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold shadow-md hover:bg-primary-hover hover:shadow-lg transition transform hover:-translate-y-1 flex justify-center items-center gap-2 text-lg">
+                  <button type="button" className="mt-4 w-full bg-gradient-primary text-white py-4 rounded-xl font-bold shadow-md hover:opacity-90 hover:shadow-lg transition transform hover:-translate-y-1 flex justify-center items-center gap-2 text-lg">
                     <span>📅</span> احجز الميعاد
                   </button>
                 </Link>
 
-                <button type="button" className="w-full bg-white border-2 border-primary-100 text-primary py-3 rounded-xl font-bold hover:bg-primary-50 transition flex justify-center items-center gap-2">
+                <button type="button" className="w-full bg-white border-2 border-border/30 text-[#8c71af] py-3 rounded-xl font-bold hover:bg-[#8c71af]/5 transition flex justify-center items-center gap-2">
                   <span>💬</span> شات مع المورد
                 </button>
               </form>
@@ -158,21 +162,21 @@ export default function ServiceDetails() {
               <img src="https://images.unsplash.com/photo-1464013778555-8e723c2f01f8?auto=format&fit=crop&w=500&q=60" className="h-40 w-full object-cover" alt="Room"/>
               <div className="p-4">
                 <h3 className="font-bold text-gray-800">قاعة اللؤلؤة</h3>
-                <p className="text-primary font-bold text-sm">18,000 ج.م</p>
+                <p className="text-gradient-primary font-bold text-sm">18,000 ج.م</p>
               </div>
             </Link>
             <Link href="/services/11" className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition block">
               <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=500&q=60" className="h-40 w-full object-cover" alt="Open Air"/>
               <div className="p-4">
                 <h3 className="font-bold text-gray-800">فيلا الأفراح (Open Air)</h3>
-                <p className="text-primary font-bold text-sm">30,000 ج.م</p>
+                <p className="text-gradient-primary font-bold text-sm">30,000 ج.م</p>
               </div>
             </Link>
             <Link href="/services/12" className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition block">
               <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=500&q=60" className="h-40 w-full object-cover" alt="Hall"/>
               <div className="p-4">
                 <h3 className="font-bold text-gray-800">قاعة الفيروز</h3>
-                <p className="text-primary font-bold text-sm">15,000 ج.م</p>
+                <p className="text-gradient-primary font-bold text-sm">15,000 ج.م</p>
               </div>
             </Link>
           </div>

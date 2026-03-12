@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Calendar, Heart, Settings, LogOut, X } from "lucide-react";
+import { Camera, Edit2, LogOut, CheckCircle, Clock, Heart, Trash2, Phone, Mail, MapPin } from "lucide-react";
 import { useAuth } from "../hooks/use-auth";
+import { CustomSelect } from "../components/ui/CustomSelect";
 import { API_URL } from "../config";
 
 export default function UserProfile() {
@@ -57,8 +58,8 @@ export default function UserProfile() {
     };
     return (<div className="bg-gray-50 min-h-screen pb-20 md:pb-0">
       <header className="md:hidden bg-white p-4 shadow-sm flex justify-between items-center sticky top-0 z-50">
-        <h1 className="text-xl font-bold text-primary">بروفايلي</h1>
-        <div className="w-8 h-8 rounded-full bg-primary-100 overflow-hidden border border-primary-200">
+        <h1 className="text-xl font-bold text-gradient-primary">بروفايلي</h1>
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-50 to-pink-50 overflow-hidden border border-border/30">
           <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=60" className="w-full h-full object-cover" alt="Profile"/>
         </div>
       </header>
@@ -69,7 +70,7 @@ export default function UserProfile() {
           {/* Sidebar (Desktop) */}
           <aside className="hidden md:block col-span-1">
             <div className="bg-white rounded-2xl shadow-sm p-6 text-center border border-gray-100 sticky top-24">
-              <div className="w-24 h-24 mx-auto bg-gray-200 rounded-full overflow-hidden mb-4 border-4 border-pink-50">
+              <div className="w-24 h-24 mx-auto bg-gray-200 rounded-full overflow-hidden mb-4 border-4 border-border/30">
                 <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=60" className="w-full h-full object-cover" alt="Profile"/>
               </div>
               <h2 className="text-xl font-bold text-gray-800">{user?.fullName || 'عضو زغروطة'}</h2>
@@ -78,14 +79,14 @@ export default function UserProfile() {
               </p>
               
               <nav className="space-y-2 text-right">
-                <button onClick={() => switchTab('bookings')} className={`w-full p-3 rounded-xl font-bold flex items-center gap-3 transition ${activeTab === 'bookings' ? 'bg-primary-50 text-primary' : 'text-gray-600 hover:bg-gray-50'}`}>
-                  <Calendar size={20}/> حجوزاتي
+                <button onClick={() => switchTab('bookings')} className={`w-full p-3 rounded-xl font-bold flex items-center gap-3 transition ${activeTab === 'bookings' ? 'bg-gradient-to-br from-blue-50 to-pink-50 text-[#8c71af] border border-border/20' : 'text-gray-600 hover:bg-gray-50'}`}>
+                  <Camera size={20}/> حجوزاتي
                 </button>
-                <button onClick={() => switchTab('favorites')} className={`w-full p-3 rounded-xl font-bold flex items-center gap-3 transition ${activeTab === 'favorites' ? 'bg-primary-50 text-primary' : 'text-gray-600 hover:bg-gray-50'}`}>
+                <button onClick={() => switchTab('favorites')} className={`w-full p-3 rounded-xl font-bold flex items-center gap-3 transition ${activeTab === 'favorites' ? 'bg-gradient-to-br from-blue-50 to-pink-50 text-[#8c71af] border border-border/20' : 'text-gray-600 hover:bg-gray-50'}`}>
                   <Heart size={20}/> المفضلة
                 </button>
-                <button onClick={() => switchTab('settings')} className={`w-full p-3 rounded-xl font-bold flex items-center gap-3 transition ${activeTab === 'settings' ? 'bg-primary-50 text-primary' : 'text-gray-600 hover:bg-gray-50'}`}>
-                  <Settings size={20}/> إعدادات الحساب
+                <button onClick={() => switchTab('settings')} className={`w-full p-3 rounded-xl font-bold flex items-center gap-3 transition ${activeTab === 'settings' ? 'bg-gradient-to-br from-blue-50 to-pink-50 text-[#8c71af] border border-border/20' : 'text-gray-600 hover:bg-gray-50'}`}>
+                  <Edit2 size={20}/> إعدادات الحساب
                 </button>
               </nav>
             </div>
@@ -112,19 +113,19 @@ export default function UserProfile() {
                       </tr>
                     </thead>
                     <tbody className="divide-y text-sm">
-                      <tr className="hover:bg-primary-50 transition">
+                      <tr className="hover:bg-[#8c71af]/5 transition">
                         <td className="p-4 font-bold">قاعة الزمردة</td>
                         <td className="p-4 text-gray-500">فندق الماسة</td>
                         <td className="p-4">20 مارس 2026</td>
-                        <td className="p-4 font-bold text-primary">25,000 ج.م</td>
+                        <td className="p-4 font-bold text-gradient-primary">25,000 ج.م</td>
                         <td className="p-4"><span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs">قيد الانتظار</span></td>
                         <td className="p-4"><button className="text-red-500 hover:underline">إلغاء</button></td>
                       </tr>
-                      <tr className="hover:bg-primary-50 transition">
+                      <tr className="hover:bg-[#8c71af]/5 transition">
                         <td className="p-4 font-bold">سيشن تصوير</td>
                         <td className="p-4 text-gray-500">استوديو لايف</td>
                         <td className="p-4">15 أبريل 2026</td>
-                        <td className="p-4 font-bold text-primary">3,000 ج.م</td>
+                        <td className="p-4 font-bold text-gradient-primary">3,000 ج.م</td>
                         <td className="p-4"><span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">مؤكد</span></td>
                         <td className="p-4"><button className="text-blue-500 hover:underline">فاتورة</button></td>
                       </tr>
@@ -144,7 +145,7 @@ export default function UserProfile() {
                     </div>
                     <div className="flex justify-between items-center text-sm text-gray-600 mb-4 bg-gray-50 p-3 rounded-xl">
                       <span>📅 20 مارس</span>
-                      <span className="font-bold text-primary">25,000 ج.م</span>
+                      <span className="font-bold text-gradient-primary">25,000 ج.م</span>
                     </div>
                     <button className="w-full border border-red-200 text-red-500 py-2 rounded-xl text-sm font-bold hover:bg-red-50">إلغاء الحجز</button>
                   </div>
@@ -159,9 +160,9 @@ export default function UserProfile() {
                     </div>
                     <div className="flex justify-between items-center text-sm text-gray-600 mb-4 bg-gray-50 p-3 rounded-xl">
                       <span>📅 15 أبريل</span>
-                      <span className="font-bold text-primary">3,000 ج.م</span>
+                      <span className="font-bold text-gradient-primary">3,000 ج.م</span>
                     </div>
-                    <button className="w-full bg-primary text-primary-foreground py-2 rounded-xl text-sm font-bold shadow-md">عرض الفاتورة</button>
+                    <button className="w-full bg-gradient-primary text-white py-2 rounded-xl text-sm font-bold shadow-md hover:opacity-90 transition">عرض الفاتورة</button>
                   </div>
                 </div>
               </section>)}
@@ -173,29 +174,29 @@ export default function UserProfile() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 relative group">
                     <button className="absolute top-3 left-3 bg-white/90 p-2 rounded-full text-red-500 shadow-sm z-10 hover:bg-red-50">
-                      <X size={16}/>
+                      <Trash2 size={16}/>
                     </button>
                     <div className="h-40 bg-gray-200 relative">
                       <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=500&q=60" className="w-full h-full object-cover" alt="Dress"/>
                     </div>
                     <div className="p-4">
                       <h3 className="font-bold text-gray-800">فستان زفاف ملكي</h3>
-                      <p className="text-primary font-bold text-sm mt-1">12,000 ج.م</p>
-                      <button className="mt-3 w-full bg-primary text-primary-foreground py-2 rounded-xl text-sm font-bold shadow-md hover:bg-primary-hover">احجز الآن</button>
+                      <p className="text-gradient-primary font-bold text-sm mt-1">12,000 ج.م</p>
+                      <button className="mt-3 w-full bg-gradient-primary text-white py-2 rounded-xl text-sm font-bold shadow-md hover:opacity-90 transition">احجز الآن</button>
                     </div>
                   </div>
 
                   <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 relative group">
                     <button className="absolute top-3 left-3 bg-white/90 p-2 rounded-full text-red-500 shadow-sm z-10 hover:bg-red-50">
-                      <X size={16}/>
+                      <Trash2 size={16}/>
                     </button>
                     <div className="h-40 bg-gray-200 relative">
                       <img src="https://images.unsplash.com/photo-1464013778555-8e723c2f01f8?auto=format&fit=crop&w=500&q=60" className="w-full h-full object-cover" alt="Hall"/>
                     </div>
                     <div className="p-4">
                       <h3 className="font-bold text-gray-800">قاعة اللؤلؤة</h3>
-                      <p className="text-primary font-bold text-sm mt-1">18,000 ج.م</p>
-                      <button className="mt-3 w-full bg-primary text-primary-foreground py-2 rounded-xl text-sm font-bold shadow-md hover:bg-primary-hover">احجز الآن</button>
+                      <p className="text-gradient-primary font-bold text-sm mt-1">18,000 ج.م</p>
+                      <button className="mt-3 w-full bg-gradient-primary text-white py-2 rounded-xl text-sm font-bold shadow-md hover:opacity-90 transition">احجز الآن</button>
                     </div>
                   </div>
                 </div>
@@ -219,12 +220,12 @@ export default function UserProfile() {
                         type="text" 
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
-                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none"
+                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-gray-700 mb-2">رقم الموبايل</label>
-                      <div className="flex border rounded-xl bg-gray-50 focus-within:ring-2 focus-within:ring-primary overflow-hidden" dir="ltr">
+                      <div className="flex rounded-xl bg-gray-50 border border-gray-200 focus-within:ring-2 focus-within:ring-[#8c71af] focus-within: overflow-hidden transition" dir="ltr">
                         <div className="p-3 bg-gray-200 text-gray-700 font-bold border-r border-gray-300 flex items-center justify-center">
                           +20
                         </div>
@@ -246,21 +247,22 @@ export default function UserProfile() {
                     {user?.role === 'CUSTOMER' && (
                       <div>
                         <label className="block text-sm font-bold text-gray-700 mb-2">النوع</label>
-                        <select 
+                        <CustomSelect 
                           value={editGender}
                           onChange={(e) => setEditGender(e.target.value)}
-                          className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none"
-                        >
-                          <option value="MALE">عريس</option>
-                          <option value="FEMALE">عروسة</option>
-                        </select>
+                          options={[
+                            { value: "MALE", label: "ذكر" },
+                            { value: "FEMALE", label: "أنثى" }
+                          ]}
+                          className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:border-[#8c71af] focus:ring-2 focus:ring-[#8c71af] font-bold text-gray-700 hover:border-[#8c71af] transition"
+                        />
                       </div>
                     )}
                     <div>
                       <div className="flex justify-between mb-2">
                         <label className="block text-sm font-bold text-gray-700 mb-2">كلمة المرور الحالية (لتأكيد هويتك)</label>
                         <Link href="/auth">
-                          <span className="text-xs text-primary hover:underline cursor-pointer">نسيت كلمة السر؟</span>
+                          <span className="text-xs text-[#8c71af] hover:text-pink-500 hover:underline cursor-pointer transition">نسيت كلمة السر؟</span>
                         </Link>
                       </div>
                       <input 
@@ -269,11 +271,11 @@ export default function UserProfile() {
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         placeholder="••••••••" 
-                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none"
+                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"
                       />
                     </div>
                     <div className="pt-4">
-                      <button disabled={isUpdating} type="submit" className="w-full md:w-auto px-8 py-3 bg-primary text-primary-foreground rounded-xl font-bold shadow-lg hover:bg-primary-hover transition disabled:opacity-50">
+                      <button disabled={isUpdating} type="submit" className="w-full md:w-auto px-8 py-3 bg-gradient-primary text-white rounded-xl font-bold shadow-lg hover:opacity-90 hover:shadow-xl transform hover:-translate-y-0.5 transition disabled:opacity-50">
                         {isUpdating ? 'جاري الحفظ...' : 'حفظ التغييرات'}
                       </button>
                     </div>
@@ -287,15 +289,15 @@ export default function UserProfile() {
 
       {/* Mobile Bottom Nav */}
       <div className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50 px-6 py-2 flex justify-between items-center">
-        <button onClick={() => switchTab('bookings')} className={`flex flex-col items-center gap-1 p-2 ${activeTab === 'bookings' ? 'text-primary' : 'text-gray-400 hover:text-primary'}`}>
+        <button onClick={() => switchTab('bookings')} className={`flex flex-col items-center gap-1 p-2 ${activeTab === 'bookings' ? 'text-[#8c71af]' : 'text-gray-400 hover:text-[#8c71af]'}`}>
           <Calendar size={24}/>
           <span className="text-[10px] font-bold">حجوزاتي</span>
         </button>
-        <button onClick={() => switchTab('favorites')} className={`flex flex-col items-center gap-1 p-2 transition ${activeTab === 'favorites' ? 'text-primary' : 'text-gray-400 hover:text-primary'}`}>
+        <button onClick={() => switchTab('favorites')} className={`flex flex-col items-center gap-1 p-2 transition ${activeTab === 'favorites' ? 'text-[#8c71af]' : 'text-gray-400 hover:text-[#8c71af]'}`}>
           <Heart size={24}/>
           <span className="text-[10px] font-bold">المفضلة</span>
         </button>
-        <button onClick={() => switchTab('settings')} className={`flex flex-col items-center gap-1 p-2 transition ${activeTab === 'settings' ? 'text-primary' : 'text-gray-400 hover:text-primary'}`}>
+        <button onClick={() => switchTab('settings')} className={`flex flex-col items-center gap-1 p-2 transition ${activeTab === 'settings' ? 'text-[#8c71af]' : 'text-gray-400 hover:text-[#8c71af]'}`}>
           <Settings size={24}/>
           <span className="text-[10px] font-bold">إعدادات</span>
         </button>

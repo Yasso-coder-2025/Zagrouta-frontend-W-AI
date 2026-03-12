@@ -31,14 +31,14 @@ export default function Navbar() {
       <nav className="bg-white shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
-            <Link href="/" className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300 tracking-wider flex items-center gap-2">
-              <span>✨</span> زغروطة
+            <Link href="/" className="text-3xl font-extrabold text-gradient-primary tracking-wider flex items-center gap-2">
+              <span className="text-white">✨</span> زغروطة
             </Link>
 
             <ul className="hidden md:flex flex gap-8 font-bold">
               {navLinks.map((link) => (
                 <li key={link.path}>
-                  <Link href={link.path} className={`transition ${location === link.path ? "text-transparent bg-clip-text bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300" : "text-gray-600 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-l hover:from-blue-900 hover:via-[#8c71af] hover:to-pink-300"}`}>
+                  <Link href={link.path} className={`transition ${location === link.path ? "text-gradient-primary" : "text-gray-600 hover-text-gradient-primary"}`}>
                     {link.name}
                   </Link>
                 </li>
@@ -47,28 +47,28 @@ export default function Navbar() {
 
             <div className="hidden md:block">
               {!user ? (
-                <Link href="/auth" className="bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300 text-white px-6 py-2.5 rounded-full font-bold hover:opacity-90 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 inline-block">
+                <Link href="/auth" className="bg-gradient-primary text-white px-6 py-2.5 rounded-full font-bold hover:opacity-90 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 inline-block">
                   دخول / تسجيل
                 </Link>
               ) : (
                 <div className="relative">
                   <button 
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="text-gray-700 font-bold px-4 flex items-center gap-2 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-l hover:from-blue-900 hover:via-[#8c71af] hover:to-pink-300 transition"
+                    className="text-gray-700 font-bold px-4 flex items-center gap-2 hover-text-gradient-primary transition cursor-pointer"
                   >
-                    <User size={20} className="text-pink-400" />
+                    <User size={20} className="text-[#8c71af]" />
                     أهلاً بك، {user.fullName || "يا عروسة"}
                     <ChevronDown size={16} className={`transition-transform text-gray-700 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {isDropdownOpen && (
                     <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                      <Link href="/user-profile" className="block px-4 py-3 hover:bg-primary-50 text-gray-700 hover:text-primary transition font-bold flex items-center gap-2">
-                        <User size={16} />
+                      <Link href="/user-profile" onClick={closeMenu} className="block px-4 py-3 hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 text-gray-700 hover-text-gradient-primary transition font-bold flex items-center gap-2 border-b border-gray-50">
+                        <User size={16} className="text-[#8c71af]" />
                         حسابي
                       </Link>
-                      <button onClick={handleLogout} className="w-full text-right px-4 py-3 hover:bg-red-50 text-red-600 transition font-bold border-t flex items-center gap-2">
-                        <LogOut size={16} />
+                      <button onClick={handleLogout} className="w-full text-right px-4 py-3 hover:bg-red-50 text-red-600 transition font-bold flex items-center gap-2">
+                        <LogOut size={16} className="text-red-500" />
                         تسجيل خروج
                       </button>
                     </div>
@@ -88,7 +88,7 @@ export default function Navbar() {
               <ul className="flex flex-col space-y-4 mt-4 font-bold text-gray-600 text-center">
                 {navLinks.map((link) => (
                   <li key={link.path}>
-                    <Link href={link.path} onClick={closeMenu} className={`block py-2 rounded-xl transition ${location === link.path ? "text-transparent bg-clip-text bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300 bg-primary-50" : "hover:bg-gray-50 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-l hover:from-blue-900 hover:via-[#8c71af] hover:to-pink-300"}`}>
+                    <Link href={link.path} onClick={closeMenu} className={`block py-2 rounded-xl transition ${location === link.path ? "text-gradient-primary bg-primary-50" : "hover:bg-gray-50 hover-text-gradient-primary"}`}>
                       {link.name}
                     </Link>
                   </li>
@@ -102,7 +102,7 @@ export default function Navbar() {
                        </span>
                     </li>
                     <li>
-                      <Link href="/user-profile" onClick={closeMenu} className="block py-3 text-primary rounded-xl flex items-center justify-center gap-2 font-bold bg-primary-50 hover:bg-primary-100 transition">
+                      <Link href="/user-profile" onClick={closeMenu} className="block py-3 text-[#8c71af] rounded-xl flex items-center justify-center gap-2 font-bold bg-[#8c71af]/10 hover:bg-[#8c71af]/20 transition">
                         <User size={18} />
                         حسابي
                       </Link>
@@ -116,7 +116,7 @@ export default function Navbar() {
                   </>
                 ) : (
                   <li>
-                    <Link href="/auth" onClick={closeMenu} className="block bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300 text-white py-3 rounded-xl shadow-md mt-2 transition hover:opacity-90">
+                    <Link href="/auth" onClick={closeMenu} className="block bg-gradient-primary text-white py-3 rounded-xl shadow-md mt-2 transition hover:opacity-90">
                       دخول / تسجيل
                     </Link>
                   </li>

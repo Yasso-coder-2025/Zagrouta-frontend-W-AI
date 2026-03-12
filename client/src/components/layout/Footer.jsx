@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="container mx-auto px-6">
         <div className={`grid grid-cols-1 ${isVendor ? 'md:grid-cols-4' : 'md:grid-cols-3'} gap-12 mb-12`}>
           <div className="col-span-1 md:col-span-1">
-            <h3 className="text-2xl font-bold text-primary mb-4">زغروطة</h3>
+            <h3 className="text-2xl font-bold text-white mb-4 tracking-wider flex items-center gap-2"><span className="text-white">✨</span> زغروطة</h3>
             <p className="text-gray-400 leading-relaxed">
               منصتك الأولى لتجهيز الفرح من الإبرة للصاروخ. إحنا معاكي خطوة بخطوة.
             </p>

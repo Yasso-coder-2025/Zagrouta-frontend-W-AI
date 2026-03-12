@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "../hooks/use-auth";
 import { API_URL } from "../config";
+import { CustomSelect } from "../components/ui/CustomSelect";
 
 // Triggering a fresh Vercel Build (Cache Bust)
 
@@ -15,7 +16,7 @@ const Popup = ({ isOpen, onClose, title, message }) => {
         <p className="text-gray-600 mb-6">{message}</p>
         <button 
           onClick={onClose}
-          className="w-full bg-primary text-primary-foreground py-2 rounded-xl font-bold hover:bg-primary-hover transition"
+          className="w-full bg-gradient-primary text-white py-2 rounded-xl font-bold hover:opacity-90 transition"
         >
           حسناً
         </button>
@@ -186,7 +187,7 @@ export default function Auth() {
     const closePopup = () => setPopupContent(prev => ({ ...prev, isOpen: false }));
 
     return (
-      <div className="bg-gradient-to-br from-pink-100 to-white min-h-screen flex items-center justify-center p-4 w-full h-full my-auto py-12">
+      <div className="bg-gradient-to-br from-blue-50 to-pink-50 min-h-screen flex items-center justify-center p-4 w-full h-full my-auto py-12">
         <Popup 
           isOpen={popupContent.isOpen} 
           onClose={closePopup} 
@@ -195,18 +196,18 @@ export default function Auth() {
         />
         <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden relative z-10">
           
-          <div className="bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300 p-8 text-center text-white">
+          <div className="bg-gradient-primary p-8 text-center text-white">
             <Link href="/">
               <h1 className="text-3xl font-bold mb-2 cursor-pointer">زغروطة</h1>
             </Link>
             <p className="text-white/90">نورّتي بيتك التاني، يا ريتنا نكون جزء من فرحتك!</p>
           </div>
 
-          <div className="flex border-b border-[#8c71af]">
-            <button onClick={() => setTab('login')} className={`w-1/2 py-4 font-bold transition ${(tab === 'login' || tab === 'forgot_password') ? 'text-transparent bg-clip-text bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300 border-b-2 border-[#8c71af]' : 'text-gray-400 hover:text-[#8c71af]'}`}>
+          <div className="flex border-b ">
+            <button onClick={() => setTab('login')} className={`w-1/2 py-4 font-bold transition ${(tab === 'login' || tab === 'forgot_password') ? 'text-gradient-primary border-b-2 ' : 'text-gray-400 hover:text-[#8c71af]'}`}>
               تسجيل الدخول
             </button>
-            <button onClick={() => setTab('signup')} className={`w-1/2 py-4 font-bold transition ${tab === 'signup' ? 'text-transparent bg-clip-text bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300 border-b-2 border-[#8c71af]' : 'text-gray-400 hover:text-[#8c71af]'}`}>
+            <button onClick={() => setTab('signup')} className={`w-1/2 py-4 font-bold transition ${tab === 'signup' ? 'text-gradient-primary border-b-2 ' : 'text-gray-400 hover:text-[#8c71af]'}`}>
               إنشاء حساب
             </button>
           </div>
@@ -222,7 +223,7 @@ export default function Auth() {
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     placeholder="example@mail.com" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:border-[#8c71af] focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
                   />
                 </div>
                 <div>
@@ -233,13 +234,13 @@ export default function Auth() {
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="••••••••" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:border-[#8c71af] focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
                   />
                 </div>
                 <div className="text-left">
-                  <button type="button" onClick={() => setTab('forgot_password')} className="text-xs text-transparent bg-clip-text bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300 font-bold hover:opacity-80 transition">نسيت كلمة السر؟</button>
+                  <button type="button" onClick={() => setTab('forgot_password')} className="text-xs text-gradient-primary font-bold hover:opacity-80 transition">نسيت كلمة السر؟</button>
                 </div>
-                <button disabled={isLoading} type="submit" className="w-full bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300 text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90 transition disabled:opacity-50">
+                <button disabled={isLoading} type="submit" className="w-full bg-gradient-primary text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90 transition disabled:opacity-50">
                   {isLoading ? 'جاري الدخول...' : 'دخول'}
                 </button>
               </form>
@@ -259,7 +260,7 @@ export default function Auth() {
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
                     placeholder="example@mail.com" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:border-[#8c71af] focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
                   />
                 </div>
                 <div>
@@ -270,7 +271,7 @@ export default function Auth() {
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
                     placeholder="••••••••" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:border-[#8c71af] focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
                   />
                 </div>
                 <div>
@@ -281,11 +282,11 @@ export default function Auth() {
                     value={signupName} // re-using signupName state for confirm password to avoid creating extra state right now
                     onChange={(e) => setSignupName(e.target.value)}
                     placeholder="••••••••" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:border-[#8c71af] focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
                   />
                 </div>
                 <div className="flex flex-col gap-3">
-                  <button disabled={isLoading} type="submit" className="w-full bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300 text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90 transition disabled:opacity-50">
+                  <button disabled={isLoading} type="submit" className="w-full bg-gradient-primary text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90 transition disabled:opacity-50">
                     {isLoading ? 'جاري التحديث...' : 'تحديث كلمة المرور'}
                   </button>
                   <button type="button" onClick={() => setTab('login')} className="w-full bg-gray-100 text-gray-600 py-3 rounded-xl font-bold hover:bg-gray-200 transition">
@@ -305,31 +306,33 @@ export default function Auth() {
                     value={signupName}
                     onChange={(e) => setSignupName(e.target.value)}
                     placeholder="اكتبي اسمك هنا" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:border-[#8c71af] focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-2">نوع الحساب</label>
-                  <select 
+                  <CustomSelect 
                     value={signupRole}
                     onChange={(e) => setSignupRole(e.target.value)}
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:border-[#8c71af] focus:ring-2 focus:ring-[#8c71af] outline-none transition"
-                  >
-                    <option value="CUSTOMER">عروسة / عريس (مستخدم)</option>
-                    <option value="VENDOR">مورد خدمات (صاحب قاعة/أتيليه)</option>
-                  </select>
+                    options={[
+                      { value: "CUSTOMER", label: "عروسة / عريس (مستخدم)" },
+                      { value: "VENDOR", label: "مورد خدمات (صاحب قاعة/أتيليه)" }
+                    ]}
+                    className="p-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] font-bold text-gray-700 hover:border-[#8c71af] transition"
+                  />
                 </div>
                 {signupRole === 'CUSTOMER' && (
                   <div>
                     <label className="block text-sm font-semibold mb-2">النوع</label>
-                    <select 
+                    <CustomSelect 
                       value={signupGender}
                       onChange={(e) => setSignupGender(e.target.value)}
-                      className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:border-[#8c71af] focus:ring-2 focus:ring-[#8c71af] outline-none transition"
-                    >
-                      <option value="MALE">ذكر</option>
-                      <option value="FEMALE">أنثى</option>
-                    </select>
+                      options={[
+                        { value: "MALE", label: "ذكر" },
+                        { value: "FEMALE", label: "أنثى" }
+                      ]}
+                      className="p-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] font-bold text-gray-700 hover:border-[#8c71af] transition"
+                    />
                   </div>
                 )}
                 <div>
@@ -340,12 +343,12 @@ export default function Auth() {
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
                     placeholder="example@mail.com" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:border-[#8c71af] focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-2">رقم الموبايل</label>
-                  <div className="flex border border-gray-200 rounded-xl bg-gray-50 focus-within:border-[#8c71af] focus-within:ring-2 focus-within:ring-[#8c71af] overflow-hidden transition" dir="ltr">
+                  <div className="flex border border-gray-200 rounded-xl bg-gray-50 focus-within: focus-within:ring-2 focus-within:ring-[#8c71af] overflow-hidden transition" dir="ltr">
                     <div className="p-3 bg-gray-200 text-gray-700 font-bold border-r border-gray-300 flex items-center justify-center">
                       +20
                     </div>
@@ -372,10 +375,10 @@ export default function Auth() {
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
                     placeholder="••••••••" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:border-[#8c71af] focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
                   />
                 </div>
-                <button disabled={isLoading} type="submit" className="w-full bg-gradient-to-l from-blue-900 via-[#8c71af] to-pink-300 text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90 transition disabled:opacity-50">
+                <button disabled={isLoading} type="submit" className="w-full bg-gradient-primary text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90 transition disabled:opacity-50">
                   {isLoading ? 'جاري الإنشاء...' : 'إنشاء حسابي'}
                 </button>
               </form>

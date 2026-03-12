@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { CustomSelect } from "../components/ui/CustomSelect";
 // Mock data based on the HTML template
 const SERVICES_DATA = [
     {
@@ -22,7 +23,7 @@ const SERVICES_DATA = [
         location: "التجمع الخامس",
         priceLabel: "إيجار",
         price: "5,000 ج.م",
-        image: "https://images.unsplash.com/photo-1594553323242-c194a69990b0?auto=format&fit=crop&w=500&q=60"
+        image: "https://s.alicdn.com/@sc04/kf/Hb2a67e5d2fc74020b6f41f6cfa79265fT/Mumuleo-Pink-15-Party-Sexy-Red-Ball-Gown-Quinceanera-Dresses-3D-Bow-Design-Tulle-Formal-Cinderella-Birthday.jpg"
     },
     {
         id: 3,
@@ -59,28 +60,28 @@ export default function Services() {
           </div>
 
           <div className="mb-6 relative">
-            <input type="text" placeholder="اسم القاعة، الفستان..." className="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-primary outline-none"/>
+            <input type="text" placeholder="اسم القاعة، الفستان..." className="w-full pl-10 pr-4 py-3 bg-gray-50 border  rounded-xl focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"/>
             <span className="absolute left-3 top-3.5 text-gray-400">🔍</span>
           </div>
           
           <div className="mb-6">
             <h3 className="font-bold mb-3 text-sm text-gray-500 uppercase">القسم</h3>
             <div className="space-y-2">
-              <label className="flex items-center gap-3 cursor-pointer hover:bg-primary-50 p-2 rounded-lg transition">
-                <input type="radio" name="category" className="accent-pink-600 w-5 h-5" defaultChecked/>
-                <span>الكل</span>
+              <label className="flex items-center gap-3 cursor-pointer hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/20 border border-transparent p-2 rounded-lg transition">
+                <input type="radio" name="category" className="accent-pink-600 w-5 h-5 focus:ring-[#8c71af]" defaultChecked/>
+                <span className="font-bold text-gray-700">الكل</span>
               </label>
-              <label className="flex items-center gap-3 cursor-pointer hover:bg-primary-50 p-2 rounded-lg transition">
-                <input type="radio" name="category" className="accent-pink-600 w-5 h-5"/>
-                <span>قاعات أفراح</span>
+              <label className="flex items-center gap-3 cursor-pointer hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/20 border border-transparent p-2 rounded-lg transition">
+                <input type="radio" name="category" className="accent-pink-600 w-5 h-5 focus:ring-[#8c71af]"/>
+                <span className="font-bold text-gray-700">قاعات أفراح</span>
               </label>
-              <label className="flex items-center gap-3 cursor-pointer hover:bg-primary-50 p-2 rounded-lg transition">
-                <input type="radio" name="category" className="accent-pink-600 w-5 h-5"/>
-                <span>فساتين زفاف</span>
+              <label className="flex items-center gap-3 cursor-pointer hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/20 border border-transparent p-2 rounded-lg transition">
+                <input type="radio" name="category" className="accent-pink-600 w-5 h-5 focus:ring-[#8c71af]"/>
+                <span className="font-bold text-gray-700">فساتين زفاف</span>
               </label>
-              <label className="flex items-center gap-3 cursor-pointer hover:bg-primary-50 p-2 rounded-lg transition">
-                <input type="radio" name="category" className="accent-pink-600 w-5 h-5"/>
-                <span>ميك أب آرتيست</span>
+              <label className="flex items-center gap-3 cursor-pointer hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/20 border border-transparent p-2 rounded-lg transition">
+                <input type="radio" name="category" className="accent-pink-600 w-5 h-5 focus:ring-[#8c71af]"/>
+                <span className="font-bold text-gray-700">ميك أب آرتيست</span>
               </label>
             </div>
           </div>
@@ -92,7 +93,7 @@ export default function Services() {
             
             <div className="flex items-center gap-2">
               <span className="text-gray-400 font-bold text-sm">أقصى سعر:</span>
-              <input type="number" className="w-full p-2 border border-gray-300 rounded-lg text-primary font-bold text-center focus:ring-2 focus:ring-primary outline-none" value={priceLimit} onChange={(e) => {
+              <input type="number" className="w-full p-2 border border-gray-300 rounded-lg text-gradient-primary font-bold text-center focus:ring-2 focus:ring-[#8c71af] outline-none" value={priceLimit} onChange={(e) => {
             let val = parseInt(e.target.value);
             if (isNaN(val))
                 val = 1000;
@@ -106,18 +107,20 @@ export default function Services() {
             </div>
           </div>
 
-          <button className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-bold hover:bg-primary-hover transition shadow-md">تطبيق الفلتر</button>
+          <button className="w-full bg-gradient-primary text-white py-3 rounded-xl font-bold hover:opacity-90 transition shadow-md hover:shadow-lg">تطبيق الفلتر</button>
         </aside>
 
         {/* Main Content */}
         <section className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">أحدث العروض <span className="text-primary text-sm font-normal">({SERVICES_DATA.length} نتيجة)</span></h1>
-            <select className="bg-white border p-2 rounded-lg text-sm focus:ring-primary outline-none">
-              <option>الأحدث</option>
-              <option>الأقل سعراً</option>
-              <option>الأعلى تقييماً</option>
-            </select>
+            <h1 className="text-2xl font-bold text-gray-800">أحدث العروض <span className="text-gradient-primary text-sm font-bold ml-2">({SERVICES_DATA.length} نتيجة)</span></h1>
+            <div className="w-48">
+              <CustomSelect 
+                defaultValue="الأحدث"
+                options={["الأحدث", "الأقل سعراً", "الأعلى تقييماً"]}
+                className="bg-white border text-gray-700 font-bold p-2.5 rounded-lg text-sm focus:ring-1 focus:ring-[#8c71af] hover:border-[#8c71af] transition"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -131,16 +134,16 @@ export default function Services() {
                 </div>
                 <div className="p-5 flex-1 flex flex-col">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg text-gray-800 group-hover:text-primary transition">{service.name}</h3>
-                    <div className="flex items-center gap-1 text-yellow-500 text-sm font-bold">⭐ {service.rating}</div>
+                    <h3 className="font-bold text-lg text-gray-800 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l group-hover:from-blue-900 group-hover:via-[#8c71af] group-hover:to-pink-300 transition">{service.name}</h3>
+                    <div className="flex items-center gap-1 text-yellow-400 text-sm font-bold">⭐ {service.rating}</div>
                   </div>
                   <p className="text-gray-500 text-sm mb-4 flex items-center gap-1">📍 {service.location}</p>
                   <div className="mt-auto flex justify-between items-center border-t pt-4">
                     <div>
                       <span className="block text-xs text-gray-400">{service.priceLabel}</span>
-                      <span className="font-bold text-primary text-lg">{service.price}</span>
+                      <span className="font-bold text-gradient-primary text-lg">{service.price}</span>
                     </div>
-                    <Link href={`/services/${service.id}`} className="bg-gray-900 text-primary-foreground px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary transition">
+                    <Link href={`/services/${service.id}`} className="bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-gradient-to-br hover:from-blue-900 hover:to-[#8c71af] transition shadow hover:shadow-md transform hover:-translate-y-0.5">
                       التفاصيل
                     </Link>
                   </div>
@@ -148,12 +151,12 @@ export default function Services() {
               </div>))}
           </div>
 
-          <div className="mt-12 flex justify-center gap-2">
-            <button className="w-10 h-10 rounded-lg border hover:bg-primary-50 flex items-center justify-center text-gray-500">‹</button>
-            <button className="w-10 h-10 rounded-lg bg-primary text-primary-foreground font-bold flex items-center justify-center shadow-md">1</button>
-            <button className="w-10 h-10 rounded-lg border hover:bg-primary-50 flex items-center justify-center text-gray-500">2</button>
-            <button className="w-10 h-10 rounded-lg border hover:bg-primary-50 flex items-center justify-center text-gray-500">3</button>
-            <button className="w-10 h-10 rounded-lg border hover:bg-primary-50 flex items-center justify-center text-gray-500">›</button>
+          <div className="mt-12 flex justify-center gap-2 font-bold">
+            <button className="w-10 h-10 rounded-lg border border-gray-200 hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/30 hover-text-gradient-primary flex items-center justify-center text-gray-500 transition">‹</button>
+            <button className="w-10 h-10 rounded-lg bg-gradient-primary text-white font-bold flex items-center justify-center shadow-lg transform hover:-translate-y-0.5 transition">1</button>
+            <button className="w-10 h-10 rounded-lg border border-gray-200 hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/30 hover-text-gradient-primary flex items-center justify-center text-gray-500 transition">2</button>
+            <button className="w-10 h-10 rounded-lg border border-gray-200 hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/30 hover-text-gradient-primary flex items-center justify-center text-gray-500 transition">3</button>
+            <button className="w-10 h-10 rounded-lg border border-gray-200 hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/30 hover-text-gradient-primary flex items-center justify-center text-gray-500 transition">›</button>
           </div>
         </section>
       </div>

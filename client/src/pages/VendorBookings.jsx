@@ -5,11 +5,12 @@ import { useAuth } from "../hooks/use-auth";
 import { API_URL } from "../config";
 import VendorHeader from "../components/layout/VendorHeader";
 
-export default function VendorDashboard() {
+export default function VendorBookings() {
     const { user, logout } = useAuth();
     const [, setLocation] = useLocation();
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
+
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [unreadMessages, setUnreadMessages] = useState(0);
 
@@ -68,13 +69,13 @@ export default function VendorDashboard() {
           زغروطة للأعمال ✨
         </div>
         <nav className="flex-1 p-4 space-y-2">
-          <Link href="/vendor-dashboard" className="block p-3 rounded-xl bg-white/20 font-bold flex items-center gap-3 shadow-sm border border-white/10">
+          <Link href="/vendor-dashboard" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
             <LayoutDashboard size={20}/> الرئيسية
           </Link>
           <Link href="/vendor-services" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
             <Scissors size={20}/> خدماتي
           </Link>
-          <Link href="/vendor-bookings" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
+          <Link href="/vendor-bookings" className="block p-3 rounded-xl bg-white/20 font-bold flex items-center gap-3 shadow-sm border border-white/10">
             <CalendarCheck size={20}/> الحجوزات
           </Link>
           <Link href="/vendor-messages" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
@@ -96,41 +97,14 @@ export default function VendorDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-y-auto w-full min-h-screen pb-12 md:pb-0">
-        <VendorHeader onUnreadMessages={setUnreadMessages} />
+        <VendorHeader title="إدارة الحجوزات" onUnreadMessages={setUnreadMessages} />
 
         <div className="p-4 md:p-8 space-y-8">
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border-r-4 border-blue-500">
-              <p className="text-gray-500 text-sm">إجمالي الحجوزات</p>
-              <p className="text-3xl font-bold mt-2">{bookings.length}</p>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border-r-4 border-green-500">
-              <div className="flex items-center justify-between">
-                <p className="text-gray-500 text-sm">الأرباح المتوقعة</p>
-                <span className="text-[10px] bg-green-50 text-green-600 px-2 py-1 rounded-md font-bold">بناءً على الحجوزات</span>
-              </div>
-              <p className="text-3xl font-bold mt-2 text-gradient-primary">
-                {expectedRevenue.toLocaleString()} ج.م
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border-r-4 border-orange-500">
-              <p className="text-gray-500 text-sm">طلبات معلقة</p>
-              <p className="text-3xl font-bold mt-2">{bookings.filter(b => b.status === 'PENDING').length}</p>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border-r-4 ">
-              <p className="text-gray-500 text-sm">تقييم المورد</p>
-              <div className="flex items-center gap-2 mt-2">
-                <Star className="text-yellow-400 fill-yellow-400" size={28} />
-                <p className="text-3xl font-bold text-gradient-primary">4.9</p>
-              </div>
-            </div>
-          </div>
 
           {/* Recent Orders */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
             <div className="p-6 border-b flex justify-between items-center">
-              <h3 className="font-bold text-lg text-gray-800">أحدث طلبات الحجز</h3>
+              <h3 className="font-bold text-lg text-gray-800">إدارة الحجوزات</h3>
               <button className="text-[#8c71af] text-sm hover:underline font-semibold transition">عرض الكل</button>
             </div>
             <div className="overflow-x-auto">
@@ -243,13 +217,13 @@ export default function VendorDashboard() {
 
       {/* Mobile Nav for Dashboard */}
       <div className="md:hidden fixed bottom-0 left-0 w-full bg-gradient-primary text-white z-50 px-4 py-2 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
-        <a href="#" className="flex flex-col items-center p-2 text-white bg-white/20 rounded-lg">
+        <Link href="/vendor-dashboard" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
           <LayoutDashboard size={20}/>
-        </a>
+        </Link>
         <Link href="/vendor-services" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
           <Scissors size={20}/>
         </Link>
-        <Link href="/vendor-bookings" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
+        <Link href="/vendor-bookings" className="flex flex-col items-center p-2 text-white bg-white/20 rounded-lg">
           <CalendarCheck size={20}/>
         </Link>
         <a href="#" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">

@@ -59,7 +59,11 @@ export default function Auth() {
         if (loginRes.ok) {
           const userObj = await loginRes.json();
           login(userObj);
-          setLocation("/");
+          if (userObj.role === 'VENDOR') {
+            setLocation("/vendor-dashboard");
+          } else {
+            setLocation("/");
+          }
         } else {
           const errorText = await loginRes.text();
           if (errorText.includes("Invalid")) {

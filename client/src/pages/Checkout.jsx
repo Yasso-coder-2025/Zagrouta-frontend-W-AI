@@ -1,18 +1,96 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
+import { useAuth } from "../hooks/use-auth";
+import { SERVICES_DATA } from "../lib/data";
+import { API_URL } from "../config";
+
 export default function Checkout() {
-    const [paymentMethod, setPaymentMethod] = useState('instapay');
+    const { user } = useAuth();
+    
+    const searchParams = new URLSearchParams(window.location.search);
+    const serviceId = searchParams.get('serviceId');
+    const bookingDate = searchParams.get('date') || "غير محدد";
+    const guests = searchParams.get('guests') || "غير محدد";
+
+    const [service, setService] = useState(null);
+    const [loadingService, setLoadingService] = useState(true);
+
+    const [name, setName] = useState("");
+    const [phone, setPhone] = useState("");
+    const [paymentMethod, setPaymentMethod] = useState('cash');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const confirmBooking = () => {
-        setIsModalOpen(true);
+
+    useEffect(() => {
+        if (user) {
+            setName(user.fullName || "");
+            setPhone(user.phone?.replace('+20', '') || "");
+        }
+    }, [user]);
+
+    useEffect(() => {
+        const fetchService = async () => {
+            if (!serviceId) return;
+            try {
+                const res = await fetch(`${API_URL}/services/${serviceId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setService(data);
+                }
+            } catch (error) {
+                console.error("Error fetching service:", error);
+            }
+            setLoadingService(false);
+        };
+        fetchService();
+    }, [serviceId]);
+
+    const confirmBooking = async () => {
+        if (!user) {
+            alert("يرجى تسجيل الدخول أولاً لإتمام الحجز");
+            return;
+        }
+
+        const bookingData = {
+            serviceId: service.id,
+            serviceName: service.name,
+            servicePrice: service.price,
+            vendorName: service.user ? service.user.fullName : ("إدارة " + service.name),
+            vendorId: service.user ? service.user.id : 2, 
+            bookingDate: bookingDate,
+            status: "PENDING",
+            paymentMethod: "CASH"
+        };
+
+        try {
+            const res = await fetch(`${API_URL}/bookings/add/${user.id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bookingData)
+            });
+
+            if (res.ok) {
+                setIsModalOpen(true);
+            } else {
+                alert("حدث خطأ أثناء الحجز");
+            }
+        } catch (error) {
+            console.error("Booking error:", error);
+            alert("حدث خطأ في الاتصال بالخادم");
+        }
     };
+
+    if (loadingService) {
+        return <div className="flex-1 flex justify-center items-center py-20 font-bold text-gray-500">جاري تجهيز بيانات الدفع...</div>;
+    }
+
+    if (!service) {
+        return <div className="flex-1 flex justify-center items-center py-20 font-bold text-red-500">حدث خطأ في العثور على الخدمة.</div>;
+    }
+
     return (<>
-      <nav className="bg-white shadow-md sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="text-3xl font-extrabold text-primary tracking-wider flex items-center gap-2">
-            <span>✨</span> زغروطة
-          </Link>
-          <div className="hidden md:block text-gray-500 font-bold">خطوة 2 من 2: الدفع والتأكيد</div>
+      <nav className="bg-white shadow-sm border-b border-gray-100 py-3 hidden md:block">
+        <div className="container mx-auto px-6 text-left">
+          <div className="text-gray-500 font-bold text-sm">خطوة 2 من 2: الدفع والتأكيد</div>
         </div>
       </nav>
 
@@ -25,21 +103,21 @@ export default function Checkout() {
             {/* Contact Details */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
               <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <span className="bg-primary-100 text-primary w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span>
+                <span className="bg-[#8c71af]/10 text-[#8c71af] w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span>
                 بيانات التواصل
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-bold text-gray-500 mb-1">الاسم بالكامل</label>
-                  <input type="text" defaultValue="أحمد محمد" className="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-primary"/>
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="مثلاً: سارة أحمد" className="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-[#8c71af]"/>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-gray-500 mb-1">رقم الموبايل</label>
-                  <input type="tel" defaultValue="01012345678" className="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-primary"/>
+                  <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01XXXXXXXXX" className="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-[#8c71af]"/>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-bold text-gray-500 mb-1">ملاحظات إضافية للمورد (اختياري)</label>
-                  <textarea rows={2} placeholder="مثلاً: محتاجين نتأكد من نوع الكوشة..." className="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-primary"></textarea>
+                  <textarea rows={2} placeholder="مثلاً: محتاجين نتأكد من نوع الكوشة..." className="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-[#8c71af]"></textarea>
                 </div>
               </div>
             </div>
@@ -47,50 +125,56 @@ export default function Checkout() {
             {/* Payment Options */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
               <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <span className="bg-primary-100 text-primary w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
+                <span className="bg-[#8c71af]/10 text-[#8c71af] w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
                 طريقة دفع العربون
               </h2>
               
               <div className="space-y-3">
                 <div>
-                  <input type="radio" id="instapay" className="peer hidden" checked={paymentMethod === 'instapay'} onChange={() => setPaymentMethod('instapay')}/>
-                  <label htmlFor="instapay" className="flex items-center justify-between p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition border-gray-200 peer-checked:border-primary peer-checked:bg-primary-50 peer-checked:text-primary">
+                  <input type="radio" id="instapay" className="peer hidden" checked={paymentMethod === 'instapay'} onChange={() => {}} disabled />
+                  <label htmlFor="instapay" className="flex items-center justify-between p-4 border rounded-xl cursor-not-allowed opacity-60 transition border-gray-200">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-bold">IP</div>
+                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-bold grayscale">IP</div>
                       <div>
-                        <span className="font-bold block">InstaPay (انستا باي)</span>
-                        <span className="text-xs text-gray-500 peer-checked:text-primary">دفع فوري وآمن</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold block text-gray-800">InstaPay (انستا باي)</span>
+                          <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full font-bold">قريباً</span>
+                        </div>
+                        <span className="text-xs text-gray-500">سيتم تفعيل الدفع الإلكتروني قريباً</span>
                       </div>
                     </div>
-                    <span className={`w-5 h-5 border-2 rounded-full flex items-center justify-center ${paymentMethod === 'instapay' ? 'border-primary bg-primary' : 'border-gray-300'}`}></span>
+                    <span className="w-5 h-5 border-2 rounded-full flex items-center justify-center border-gray-300"></span>
                   </label>
                 </div>
 
                 <div>
-                  <input type="radio" id="vodafone" className="peer hidden" checked={paymentMethod === 'vodafone'} onChange={() => setPaymentMethod('vodafone')}/>
-                  <label htmlFor="vodafone" className="flex items-center justify-between p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition border-gray-200 peer-checked:border-primary peer-checked:bg-primary-50 peer-checked:text-primary">
+                  <input type="radio" id="vodafone" className="peer hidden" checked={paymentMethod === 'vodafone'} onChange={() => {}} disabled />
+                  <label htmlFor="vodafone" className="flex items-center justify-between p-4 border rounded-xl cursor-not-allowed opacity-60 transition border-gray-200">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center text-red-600 font-bold">VF</div>
+                      <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center text-red-600 font-bold grayscale">VF</div>
                       <div>
-                        <span className="font-bold block">فودافون كاش</span>
-                        <span className="text-xs text-gray-500">تحويل للمحفظة</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold block text-gray-800">فودافون كاش</span>
+                          <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full font-bold">قريباً</span>
+                        </div>
+                        <span className="text-xs text-gray-500">سيتم تفعيل الدفع الإلكتروني قريباً</span>
                       </div>
                     </div>
-                    <span className={`w-5 h-5 border-2 rounded-full flex items-center justify-center ${paymentMethod === 'vodafone' ? 'border-primary bg-primary' : 'border-gray-300'}`}></span>
+                    <span className="w-5 h-5 border-2 rounded-full flex items-center justify-center border-gray-300"></span>
                   </label>
                 </div>
 
                 <div>
                   <input type="radio" id="cash" className="peer hidden" checked={paymentMethod === 'cash'} onChange={() => setPaymentMethod('cash')}/>
-                  <label htmlFor="cash" className="flex items-center justify-between p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition border-gray-200 peer-checked:border-primary peer-checked:bg-primary-50 peer-checked:text-primary">
+                  <label htmlFor="cash" className="flex items-center justify-between p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition border-gray-200 peer-checked:border-[#8c71af] peer-checked:bg-[#8c71af]/5 peer-checked:text-[#8c71af]">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 font-bold">💵</div>
                       <div>
-                        <span className="font-bold block">دفع نقدي (في المقر)</span>
+                        <span className="font-bold block text-gray-800">دفع نقدي (في المقر)</span>
                         <span className="text-xs text-gray-500">يتم دفع العربون عند زيارة المكان</span>
                       </div>
                     </div>
-                    <span className={`w-5 h-5 border-2 rounded-full flex items-center justify-center ${paymentMethod === 'cash' ? 'border-primary bg-primary' : 'border-gray-300'}`}></span>
+                    <span className={`w-5 h-5 border-2 rounded-full flex items-center justify-center ${paymentMethod === 'cash' ? 'border-[#8c71af] bg-[#8c71af]' : 'border-gray-300'}`}></span>
                   </label>
                 </div>
               </div>
@@ -103,37 +187,37 @@ export default function Checkout() {
               <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">ملخص الحجز 🧾</h3>
               
               <div className="flex gap-4 mb-4">
-                <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=150&q=60" className="w-16 h-16 rounded-lg object-cover" alt="Hall"/>
+                <img src={service.imageUrl || "https://via.placeholder.com/500"} className="w-16 h-16 rounded-lg object-cover" alt="Service"/>
                 <div>
-                  <h4 className="font-bold text-sm">قاعة الماسة الملكية</h4>
-                  <p className="text-gray-500 text-xs">مدينة نصر، القاهرة</p>
+                  <h4 className="font-bold text-sm">{service.name}</h4>
+                  <p className="text-gray-500 text-xs">{service.location || 'القاهرة'}</p>
                 </div>
               </div>
 
               <div className="space-y-3 text-sm text-gray-600 mb-6">
                 <div className="flex justify-between">
                   <span>التاريخ:</span>
-                  <span className="font-bold text-gray-800">20 مارس 2026</span>
+                  <span className="font-bold text-gray-800">{bookingDate}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>العدد:</span>
-                  <span className="font-bold text-gray-800">200 فرد</span>
+                  <span className="font-bold text-gray-800">{guests}</span>
                 </div>
                 <div className="flex justify-between pt-3 border-t">
                   <span>إجمالي الباقة:</span>
-                  <span className="font-bold">25,000 ج.م</span>
+                  <span className="font-bold">{service.price}</span>
                 </div>
                 <div className="flex justify-between text-green-600">
-                  <span>العربون المطلوب (10%):</span>
+                  <span>العربون المطلوب:</span>
                   <span className="font-bold">2,500 ج.م</span>
                 </div>
               </div>
 
               <div className="bg-gray-50 p-3 rounded-lg text-xs text-gray-500 mb-6 text-center">
-                بإتمام الحجز أنت توافق على <a href="#" className="text-primary underline">الشروط والأحكام</a>
+                بإتمام الحجز أنت توافق على <a href="#" className="text-[#8c71af] underline">الشروط والأحكام</a>
               </div>
 
-              <button onClick={confirmBooking} className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold shadow-md hover:bg-primary-hover transition transform hover:-translate-y-1">
+              <button onClick={confirmBooking} className="w-full bg-gradient-primary text-white py-4 rounded-xl font-bold shadow-md hover:opacity-90 transition transform hover:-translate-y-1">
                 تأكيد الحجز (2,500 ج.م)
               </button>
               
@@ -157,7 +241,7 @@ export default function Checkout() {
             
             <div className="space-y-3 relative z-10">
               <Link href="/user-profile">
-                <button className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-bold hover:bg-primary-hover transition mb-3">
+                <button className="w-full bg-gradient-primary text-white py-3 rounded-xl font-bold hover:opacity-90 transition mb-3">
                   عرض حجوزاتي
                 </button>
               </Link>

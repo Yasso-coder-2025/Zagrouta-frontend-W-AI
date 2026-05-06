@@ -14,13 +14,19 @@ import UserProfile from "@/pages/UserProfile";
 import Planner from "@/pages/Planner";
 import Checkout from "@/pages/Checkout";
 import VendorDashboard from "@/pages/VendorDashboard";
+import VendorServices from "@/pages/VendorServices";
+import VendorBookings from "@/pages/VendorBookings";
+import VendorMessages from "@/pages/VendorMessages";
 import Contact from "@/pages/Contact";
 function Router() {
     const [location] = useLocation();
-    const isVendorDashboard = location.startsWith("/vendor-dashboard");
+    const isVendorDashboard = location.startsWith("/vendor-dashboard") || location.startsWith("/vendor-services") || location.startsWith("/vendor-bookings") || location.startsWith("/vendor-messages");
     if (isVendorDashboard) {
         return (<Switch>
         <Route path="/vendor-dashboard" component={VendorDashboard}/>
+        <Route path="/vendor-services" component={VendorServices}/>
+        <Route path="/vendor-bookings" component={VendorBookings}/>
+        <Route path="/vendor-messages" component={VendorMessages}/>
         <Route component={NotFound}/>
       </Switch>);
     }

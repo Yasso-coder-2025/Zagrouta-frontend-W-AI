@@ -1,6 +1,19 @@
+import { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Send, MessageSquare, MessageCircle } from "lucide-react";
 import { CustomSelect } from "../components/ui/CustomSelect";
+import { useAuth } from "../hooks/use-auth";
+
 export default function Contact() {
+    const { user } = useAuth();
+    const [name, setName] = useState("");
+    const [phone, setPhone] = useState("");
+
+    useEffect(() => {
+        if (user) {
+            setName(user.fullName || "");
+            setPhone(user.phone?.replace('+20', '') || "");
+        }
+    }, [user]);
     return (<div className="bg-gray-50 text-gray-800 flex-1 flex flex-col w-full h-full">
       <main className="container mx-auto px-4 py-12 flex-1">
         <div className="text-center mb-12">
@@ -17,11 +30,23 @@ export default function Contact() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold mb-2">الاسم بالكامل</label>
-                  <input type="text" placeholder="مثلاً: سارة أحمد" className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"/>
+                  <input 
+                    type="text" 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="مثلاً: سارة أحمد" 
+                    className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-2">رقم للتواصل</label>
-                  <input type="tel" placeholder="01XXXXXXXXX" className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"/>
+                  <input 
+                    type="tel" 
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="01XXXXXXXXX" 
+                    className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"
+                  />
                 </div>
               </div>
               <div>

@@ -47,7 +47,7 @@ export default function Home() {
         title={popupContent.title} 
         message={popupContent.message} 
       />
-      <header className="container mx-auto px-6 py-16 md:py-24 text-center flex-1 flex flex-col justify-center">
+      <header className="container mx-auto px-6 py-16 md:py-24 text-center flex-1 flex flex-col justify-center min-h-[85vh]">
         <div className="fade-in-up">
           <h1 className="text-4xl md:text-7xl font-extrabold text-gray-900 mb-6 leading-tight">
             جهزي لفرحك
@@ -71,6 +71,28 @@ export default function Home() {
           </div> */}
         </div>
       </header>
+
+      <section className="container mx-auto px-6 pb-20">
+        <div className="fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <img 
+            src="/hero-banner.jpg" 
+            alt="كل خدمات زفافك في مكان واحد" 
+            className="w-full max-w-5xl mx-auto rounded-[2rem] shadow-2xl object-cover hover:scale-[1.02] transition-transform duration-500 border-4 border-white/50 cursor-pointer" 
+          />
+        </div>
+
+        <div className="mt-12 fade-in-up" style={{ animationDelay: '0.4s' }}>
+          <video 
+            src="/lv_0_20260503135454.mp4" 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+            controls
+            className="w-full max-w-5xl mx-auto rounded-[2rem] shadow-2xl object-cover hover:scale-[1.02] transition-transform duration-500 border-4 border-white/50" 
+          />
+        </div>
+      </section>
 
       <section className="bg-white py-20">
         <div className="container mx-auto px-6">

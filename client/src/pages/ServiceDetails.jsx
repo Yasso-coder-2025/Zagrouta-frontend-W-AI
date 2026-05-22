@@ -3,6 +3,7 @@ import { Link, useParams, useLocation } from "wouter";
 import { CustomSelect } from "../components/ui/CustomSelect";
 import { API_URL } from "../config";
 import { useAuth } from "../hooks/use-auth";
+import { Facebook, Instagram } from "lucide-react";
 
 export default function ServiceDetails() {
     const { id } = useParams();
@@ -16,6 +17,23 @@ export default function ServiceDetails() {
     const [chatSent, setChatSent] = useState(false);
     const [chatSending, setChatSending] = useState(false);
 
+    // Reviews State
+    const [reviews, setReviews] = useState([]);
+    const [loadingReviews, setLoadingReviews] = useState(true);
+    const [newComment, setNewComment] = useState("");
+    const [newRating, setNewRating] = useState(5);
+    const [hoverRating, setHoverRating] = useState(0);
+    const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+    const [submitError, setSubmitError] = useState("");
+
+    const averageRating = useMemo(() => {
+        if (!reviews || reviews.length === 0) return 0;
+        const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+        return (sum / reviews.length).toFixed(1);
+    }, [reviews]);
+
+    const reviewsCount = reviews ? reviews.length : 0;
+
     useEffect(() => {
         const fetchServiceData = async () => {
             try {
@@ -23,13 +41,20 @@ export default function ServiceDetails() {
                 const res = await fetch(`${API_URL}/services/${id}`);
                 if (res.ok) {
                     const data = await res.json();
+                    
                     setService({
                         id: data.id,
                         name: data.name,
                         category: data.category || 'venue',
                         typeLabel: data.category === 'venue' ? 'قاعة' : data.category === 'dress' ? 'فستان' : data.category === 'makeup' ? 'ميك أب' : 'تصوير',
                         rating: "4.9",
-                        location: data.location || "القاهرة",
+                        // Mock data as fallback for newly added fields if the backend hasn't been updated yet
+                        location: data.location || data.user?.governorate || "القاهرة",
+                        address: data.user?.address || "شيراتون المطار، خلف نادي النصر",
+                        bio: data.user?.bio || null,
+                        logoUrl: data.user?.logoUrl || "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=60",
+                        facebook: data.user?.facebook || "https://facebook.com",
+                        instagram: data.user?.instagram || "https://instagram.com",
                         priceLabel: data.category === 'dress' ? 'إيجار' : 'يبدأ من',
                         price: data.price || "0 ج.م",
                         image: data.imageUrl || "https://via.placeholder.com/500",
@@ -56,6 +81,64 @@ export default function ServiceDetails() {
         };
         fetchServiceData();
     }, [id]);
+
+    const fetchReviews = async () => {
+        try {
+            const res = await fetch(`${API_URL}/reviews/service/${id}`);
+            if (res.ok) {
+                const data = await res.json();
+                setReviews(data);
+            }
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+        } finally {
+            setLoadingReviews(false);
+        }
+    };
+
+    useEffect(() => {
+        if (id) {
+            fetchReviews();
+        }
+    }, [id]);
+
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        if (!user) return;
+        if (!newComment.trim()) return;
+
+        setIsSubmittingReview(true);
+        setSubmitError("");
+
+        try {
+            const res = await fetch(`${API_URL}/reviews/add`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    serviceId: parseInt(id),
+                    userId: user.id,
+                    comment: newComment.trim(),
+                    rating: newRating
+                })
+            });
+
+            if (res.ok) {
+                setNewComment("");
+                setNewRating(5);
+                await fetchReviews();
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                setSubmitError(errData.message || "حدث خطأ أثناء إضافة التقييم. حاول مرة أخرى.");
+            }
+        } catch (error) {
+            console.error("Error submitting review:", error);
+            setSubmitError("فشل الاتصال بالخادم. تأكد من اتصالك بالإنترنت.");
+        } finally {
+            setIsSubmittingReview(false);
+        }
+    };
 
     const images = useMemo(() => {
         if (!service) return [];
@@ -92,7 +175,6 @@ export default function ServiceDetails() {
         if (!chatMessage.trim() || !service) return;
         setChatSending(true);
         try {
-            // نحتاج vendorId — موجود في service.user.id من الباك إند
             const svcRes = await fetch(`${API_URL}/services/${service.id}`);
             const svcData = await svcRes.json();
             const vendorId = svcData.user?.id;
@@ -134,6 +216,11 @@ export default function ServiceDetails() {
 
     // Dynamic content generation details based on category
     const renderDescription = () => {
+        // If the vendor has set a specific bio, show it instead of generic text!
+        if (service.bio) {
+            return service.bio;
+        }
+
         if (service.category === 'venue') {
             return `تقدم ${service.name} تجربة لا تُنسى بأفضل المعايير. مساحة واسعة، ديكورات مودرن بأحدث صيحات 2026، وفريق كامل لتنظيم الإضاءة والصوت لضمان ليلة عمر مثالية.`;
         } else if (service.category === 'dress') {
@@ -179,9 +266,6 @@ export default function ServiceDetails() {
             );
         }
     };
-
-    const reviewsCount = Math.floor(parseFloat(service.rating) * 24);
-
     return (<>
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-3 text-sm text-gray-500 flex items-center gap-2">
@@ -212,18 +296,29 @@ export default function ServiceDetails() {
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-800 mb-2">{service.name}</h1>
-                  <p className="text-gray-500 flex items-center gap-2">📍 {service.location}</p>
+                  <p className="text-gray-500 flex items-center gap-2">📍 {service.location} - {service.address}</p>
                 </div>
                 <div className="flex flex-col items-end">
-                  <div className="flex text-yellow-500 text-lg mb-1">{"★".repeat(Math.round(parseFloat(service.rating)))}{"☆".repeat(5-Math.round(parseFloat(service.rating)))}</div>
-                  <span className="text-sm text-gray-400 font-bold">{service.rating} ({reviewsCount} تقييم)</span>
+                  {reviewsCount > 0 ? (
+                    <>
+                      <div className="flex text-yellow-500 text-lg mb-1">
+                        {"★".repeat(Math.round(parseFloat(averageRating)))}{"☆".repeat(5-Math.round(parseFloat(averageRating)))}
+                      </div>
+                      <span className="text-sm text-gray-400 font-bold">{averageRating} ({reviewsCount} تقييم)</span>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex text-gray-300 text-lg mb-1">☆☆☆☆☆</div>
+                      <span className="text-sm text-gray-400 font-medium">لا توجد تقييمات</span>
+                    </>
+                  )}
                 </div>
               </div>
 
               <div className="border-t border-gray-100 my-6"></div>
 
               <h3 className="text-xl font-bold text-gray-800 mb-4">عن {service.typeLabel}</h3>
-              <p className="text-gray-600 leading-relaxed mb-6">
+              <p className="text-gray-600 leading-relaxed mb-6 whitespace-pre-wrap">
                 {renderDescription()}
               </p>
 
@@ -234,27 +329,102 @@ export default function ServiceDetails() {
             </div>
 
             {/* Reviews */}
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">آراء العرايس (3)</h3>
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 space-y-8">
+              <div>
+                <h3 className="text-xl font-bold text-gray-800 mb-1">آراء العرايس ({reviewsCount})</h3>
+                <p className="text-sm text-gray-500">آراء وتجارب حقيقية من عرايس زغروتة</p>
+              </div>
               
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-pink-50 rounded-full flex items-center justify-center font-bold text-[#8c71af]">س</div>
-                  <div>
-                    <h4 className="font-bold text-gray-800">سارة أحمد</h4>
-                    <div className="text-yellow-500 text-xs mb-1">★★★★★</div>
-                    <p className="text-gray-600 text-sm">القاعة تحفة والتعامل قمة في الذوق، بجد شكراً ليكم.</p>
-                  </div>
+              {loadingReviews ? (
+                <div className="text-gray-500 text-center py-4">جاري تحميل الآراء...</div>
+              ) : reviews.length === 0 ? (
+                <div className="bg-gray-50/50 rounded-2xl p-6 text-center border border-dashed border-gray-100">
+                  <p className="text-gray-500 text-sm">لا توجد آراء بعد. كوني أول من يشاركنا رأيه!</p>
                 </div>
-                <hr className="border-gray-100"/>
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">م</div>
-                  <div>
-                    <h4 className="font-bold text-gray-800">منى زكي</h4>
-                    <div className="text-yellow-500 text-xs mb-1">★★★★☆</div>
-                    <p className="text-gray-600 text-sm">المكان جميل بس التكييف كان عالي شوية، غير كده كل حاجة تمام.</p>
-                  </div>
+              ) : (
+                <div className="space-y-6">
+                  {reviews.map((r, index) => {
+                    const initials = r.user?.fullName ? r.user.fullName.trim().charAt(0) : "ع";
+                    return (
+                      <div key={r.id}>
+                        {index > 0 && <hr className="border-gray-100 mb-6"/>}
+                        <div className="flex gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-pink-50 to-[#8c71af]/10 rounded-full flex items-center justify-center font-bold text-[#8c71af] shadow-sm">
+                            {initials}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between items-start">
+                              <h4 className="font-bold text-gray-800">{r.user?.fullName || "عروسة مجهولة"}</h4>
+                              <span className="text-xs text-gray-400">{r.createdAt ? r.createdAt.split(' ')[0] : ''}</span>
+                            </div>
+                            <div className="text-yellow-500 text-xs mb-1">
+                              {"★".repeat(r.rating)}{"☆".repeat(5-r.rating)}
+                            </div>
+                            <p className="text-gray-600 text-sm leading-relaxed">{r.comment}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
+              )}
+
+              {/* Add Review Form */}
+              <div className="border-t border-gray-100 pt-8 mt-8">
+                {user ? (
+                  <form onSubmit={handleReviewSubmit} className="space-y-4">
+                    <h4 className="text-lg font-bold text-gray-800">اكتبي رأيك وتجربتك</h4>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-gray-700">تقييمك بالنجوم:</span>
+                      <div className="flex gap-1 text-2xl">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => setNewRating(star)}
+                            onMouseEnter={() => setHoverRating(star)}
+                            onMouseLeave={() => setHoverRating(0)}
+                            className="transition-transform duration-100 hover:scale-125 focus:outline-none cursor-pointer"
+                          >
+                            <span className={(hoverRating || newRating) >= star ? "text-yellow-500" : "text-gray-200"}>
+                              ★
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        placeholder="شاركينا تفاصيل تجربتك مع هذا المورد..."
+                        rows={3}
+                        className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#8c71af]/30 focus:border-[#8c71af] resize-none transition font-medium"
+                        required
+                      />
+                      {submitError && <p className="text-xs text-red-500 mt-1">{submitError}</p>}
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmittingReview || !newComment.trim()}
+                      className="bg-gradient-primary text-white px-6 py-3 rounded-xl font-bold shadow-md hover:opacity-90 transition disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                    >
+                      {isSubmittingReview ? "جاري الإضافة..." : "إضافة تقييمك القيم ✨"}
+                    </button>
+                  </form>
+                ) : (
+                  <div className="bg-gray-50/50 border border-dashed border-gray-200 rounded-2xl p-6 text-center">
+                    <p className="text-gray-600 text-sm mb-3">سجلي دخولك لتشاركينا رأيك وتقييمك للمورد!</p>
+                    <Link href="/auth">
+                      <button className="bg-gradient-primary text-white px-6 py-2.5 rounded-xl font-bold shadow-md hover:opacity-90 transition">
+                        تسجيل الدخول / إنشاء حساب
+                      </button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -316,12 +486,25 @@ export default function ServiceDetails() {
               </form>
 
               <div className="mt-6 pt-6 border-t text-center">
-                <p className="text-xs text-gray-400 mb-2">هذا المورد موثوق وتم التحقق منه ✅</p>
+                <p className="text-xs text-gray-400 mb-3">هذا المورد موثوق وتم التحقق منه ✅</p>
                 <div className="flex items-center justify-center gap-3">
-                  <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=60" className="w-10 h-10 rounded-full object-cover" alt="Manager"/>
+                  <img src={service.logoUrl} className="w-12 h-12 rounded-full object-cover border-2 border-pink-100 shadow-sm" alt="Vendor Logo"/>
                   <div className="text-right">
                     <p className="text-sm font-bold text-gray-800">إدارة {service.vendorName || service.name}</p>
-                    <p className="text-xs text-gray-500">متواجد للرد السريع</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-xs text-gray-500">متواجد للرد السريع</p>
+                      {(service.facebook || service.instagram) && <span className="text-gray-300">|</span>}
+                      {service.facebook && (
+                          <a href={service.facebook} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-700 transition">
+                              <Facebook size={14} />
+                          </a>
+                      )}
+                      {service.instagram && (
+                          <a href={service.instagram} target="_blank" rel="noreferrer" className="text-pink-600 hover:text-pink-700 transition">
+                              <Instagram size={14} />
+                          </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

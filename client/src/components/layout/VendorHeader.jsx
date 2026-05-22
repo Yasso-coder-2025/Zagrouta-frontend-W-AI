@@ -209,8 +209,12 @@ export default function VendorHeader({ title, extraContent, onUnreadMessages }) 
         </div>
 
         {/* Avatar */}
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-800 via-[#8c71af] to-pink-400 flex items-center justify-center text-white text-sm font-bold shadow-sm select-none">
-          {initials}
+        <div className="w-9 h-9 rounded-xl overflow-hidden bg-gradient-to-br from-blue-800 via-[#8c71af] to-pink-400 flex items-center justify-center text-white text-sm font-bold shadow-sm select-none border border-white/20">
+          {user?.logoUrl ? (
+             <img src={user.logoUrl} className="w-full h-full object-cover" alt="Vendor Logo" />
+          ) : (
+             initials
+          )}
         </div>
       </div>
     </header>

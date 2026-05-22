@@ -83,9 +83,9 @@ export default function VendorDashboard() {
               <span className="mr-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1">{unreadMessages}</span>
             )}
           </Link>
-          <a href="#" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
+          <Link href="/vendor-settings" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
             <Settings size={20}/> الإعدادات
-          </a>
+          </Link>
         </nav>
         <div className="p-4 border-t border-white/20">
           <button onClick={handleLogout} className="w-full block p-3 text-center bg-white/10 rounded-xl hover:bg-red-500/80 transition text-sm flex items-center justify-center gap-2 font-bold cursor-pointer">

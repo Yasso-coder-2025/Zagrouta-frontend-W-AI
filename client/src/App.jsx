@@ -10,6 +10,7 @@ import Home from "@/pages/Home";
 import Services from "@/pages/Services";
 import ServiceDetails from "@/pages/ServiceDetails";
 import Auth from "@/pages/Auth";
+import AuthCallback from "@/pages/AuthCallback";
 import UserProfile from "@/pages/UserProfile";
 import Planner from "@/pages/Planner";
 import Checkout from "@/pages/Checkout";
@@ -17,16 +18,18 @@ import VendorDashboard from "@/pages/VendorDashboard";
 import VendorServices from "@/pages/VendorServices";
 import VendorBookings from "@/pages/VendorBookings";
 import VendorMessages from "@/pages/VendorMessages";
+import VendorSettings from "@/pages/VendorSettings";
 import Contact from "@/pages/Contact";
 function Router() {
     const [location] = useLocation();
-    const isVendorDashboard = location.startsWith("/vendor-dashboard") || location.startsWith("/vendor-services") || location.startsWith("/vendor-bookings") || location.startsWith("/vendor-messages");
+    const isVendorDashboard = location.startsWith("/vendor-dashboard") || location.startsWith("/vendor-services") || location.startsWith("/vendor-bookings") || location.startsWith("/vendor-messages") || location.startsWith("/vendor-settings");
     if (isVendorDashboard) {
         return (<Switch>
         <Route path="/vendor-dashboard" component={VendorDashboard}/>
         <Route path="/vendor-services" component={VendorServices}/>
         <Route path="/vendor-bookings" component={VendorBookings}/>
         <Route path="/vendor-messages" component={VendorMessages}/>
+        <Route path="/vendor-settings" component={VendorSettings}/>
         <Route component={NotFound}/>
       </Switch>);
     }
@@ -38,6 +41,7 @@ function Router() {
           <Route path="/services" component={Services}/>
           <Route path="/services/:id" component={ServiceDetails}/>
           <Route path="/auth" component={Auth}/>
+          <Route path="/auth/callback" component={AuthCallback}/>
           <Route path="/user-profile" component={UserProfile}/>
           <Route path="/planner" component={Planner}/>
           <Route path="/checkout" component={Checkout}/>

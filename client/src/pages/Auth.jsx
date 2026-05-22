@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "../hooks/use-auth";
 import { API_URL } from "../config";
 import { CustomSelect } from "../components/ui/CustomSelect";
+import { Eye, EyeOff } from "lucide-react";
 
 // Triggering a fresh Vercel Build (Cache Bust)
 
@@ -40,6 +41,12 @@ export default function Auth() {
     const [signupPassword, setSignupPassword] = useState("");
     const [signupPhone, setSignupPhone] = useState("");
     const [signupGender, setSignupGender] = useState("MALE");
+
+    // Password visibility states
+    const [showLoginPassword, setShowLoginPassword] = useState(false);
+    const [showSignupPassword, setShowSignupPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // Popup state
     const [popupContent, setPopupContent] = useState({ isOpen: false, title: "", message: "" });
@@ -238,14 +245,23 @@ export default function Auth() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-2">كلمة المرور</label>
-                  <input 
-                    type="password" 
-                    required
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    placeholder="••••••••" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
-                  />
+                  <div className="relative">
+                    <input 
+                      type={showLoginPassword ? "text" : "password"} 
+                      required
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="••••••••" 
+                      className="w-full p-3 pl-10 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowLoginPassword(!showLoginPassword)}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer flex items-center"
+                    >
+                      {showLoginPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
                 <div className="text-left">
                   <button type="button" onClick={() => setTab('forgot_password')} className="text-xs text-gradient-primary font-bold hover:opacity-80 transition">نسيت كلمة السر؟</button>
@@ -275,25 +291,43 @@ export default function Auth() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-2">كلمة المرور الجديدة</label>
-                  <input 
-                    type="password" 
-                    required
-                    value={signupPassword}
-                    onChange={(e) => setSignupPassword(e.target.value)}
-                    placeholder="••••••••" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
-                  />
+                  <div className="relative">
+                    <input 
+                      type={showNewPassword ? "text" : "password"} 
+                      required
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                      placeholder="••••••••" 
+                      className="w-full p-3 pl-10 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer flex items-center"
+                    >
+                      {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-2">تأكيد كلمة المرور الجديدة</label>
-                  <input 
-                    type="password" 
-                    required
-                    value={signupName} // re-using signupName state for confirm password to avoid creating extra state right now
-                    onChange={(e) => setSignupName(e.target.value)}
-                    placeholder="••••••••" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
-                  />
+                  <div className="relative">
+                    <input 
+                      type={showConfirmPassword ? "text" : "password"} 
+                      required
+                      value={signupName} // re-using signupName state for confirm password to avoid creating extra state right now
+                      onChange={(e) => setSignupName(e.target.value)}
+                      placeholder="••••••••" 
+                      className="w-full p-3 pl-10 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer flex items-center"
+                    >
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
                 <div className="flex flex-col gap-3">
                   <button disabled={isLoading} type="submit" className="w-full bg-gradient-primary text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90 transition disabled:opacity-50">
@@ -379,14 +413,23 @@ export default function Auth() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-2">كلمة المرور</label>
-                  <input 
-                    type="password" 
-                    required
-                    value={signupPassword}
-                    onChange={(e) => setSignupPassword(e.target.value)}
-                    placeholder="••••••••" 
-                    className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
-                  />
+                  <div className="relative">
+                    <input 
+                      type={showSignupPassword ? "text" : "password"} 
+                      required
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                      placeholder="••••••••" 
+                      className="w-full p-3 pl-10 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowSignupPassword(!showSignupPassword)}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer flex items-center"
+                    >
+                      {showSignupPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
                 <button disabled={isLoading} type="submit" className="w-full bg-gradient-primary text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90 transition disabled:opacity-50">
                   {isLoading ? 'جاري الإنشاء...' : 'إنشاء حسابي'}

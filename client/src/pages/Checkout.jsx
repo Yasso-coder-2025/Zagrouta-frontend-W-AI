@@ -138,7 +138,16 @@ export default function Checkout() {
     };
 
     if (loadingService) {
-        return <div className="flex-1 flex justify-center items-center py-20 font-bold text-gray-500">جاري تجهيز بيانات الدفع...</div>;
+        return (
+            <div className="flex-1 flex flex-col items-center justify-center min-h-[70vh] bg-gradient-to-br from-pink-50/30 to-white py-12 animate-in fade-in duration-300">
+                <div className="relative w-16 h-16 mb-4">
+                    <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-[#8c71af] animate-spin"></div>
+                    <div className="absolute inset-2 rounded-full border-4 border-b-transparent border-pink-300 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+                </div>
+                <h3 className="text-xl font-bold text-gray-700 animate-pulse">جاري تجهيز بيانات الدفع... ✨</h3>
+                <p className="text-xs text-gray-400 mt-2 font-medium">دقائق وبنحضرلك تفاصيل الدفع الآمنة</p>
+            </div>
+        );
     }
 
     if (!service) {

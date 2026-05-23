@@ -294,7 +294,12 @@ export default function Services() {
                 </div>
               ))
             ) : loadingServices ? (
-               <div className="col-span-full py-20 text-center text-gray-500 font-bold">جاري تحميل الخدمات...</div>
+               <div className="col-span-full flex flex-col items-center justify-center py-24 text-center">
+                   <div className="relative w-12 h-12 mb-4">
+                       <div className="absolute inset-0 rounded-full border-3 border-t-transparent border-[#8c71af] animate-spin"></div>
+                   </div>
+                   <p className="text-gray-500 font-bold animate-pulse">جاري تحميل الخدمات... ✨</p>
+               </div>
             ) : paginatedServices.length > 0 ? (
               paginatedServices.map((service) => (<div key={service.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group border border-gray-100 flex flex-col">
                 <div className="relative h-56 bg-gray-200 overflow-hidden">

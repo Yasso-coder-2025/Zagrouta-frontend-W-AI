@@ -4,8 +4,10 @@ import { CustomSelect } from "../components/ui/CustomSelect";
 import { API_URL } from "../config";
 import { useAuth } from "../hooks/use-auth";
 import { Facebook, Instagram } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function ServiceDetails() {
+    const { lang, t } = useLanguage();
     const { id } = useParams();
     const { user } = useAuth();
     const [, setLocation] = useLocation();
@@ -46,19 +48,27 @@ export default function ServiceDetails() {
                         id: data.id,
                         name: data.name,
                         category: data.category || 'venue',
-                        typeLabel: data.category === 'venue' ? 'قاعة' : data.category === 'dress' ? 'فستان' : data.category === 'makeup' ? 'ميك أب' : 'تصوير',
+                        typeLabel: data.category === 'venue' 
+                            ? (lang === 'ar' ? 'قاعة' : 'Venue') 
+                            : data.category === 'dress' 
+                            ? (lang === 'ar' ? 'فستان' : 'Dress') 
+                            : data.category === 'makeup' 
+                            ? (lang === 'ar' ? 'ميك أب' : 'Makeup') 
+                            : (lang === 'ar' ? 'تصوير' : 'Photography'),
                         rating: "4.9",
                         // Mock data as fallback for newly added fields if the backend hasn't been updated yet
-                        location: data.location || data.user?.governorate || "القاهرة",
-                        address: data.user?.address || "شيراتون المطار، خلف نادي النصر",
+                        location: data.location || data.user?.governorate || (lang === 'ar' ? "القاهرة" : "Cairo"),
+                        address: data.user?.address || (lang === 'ar' ? "شيراتون المطار، خلف نادي النصر" : "Sheraton Airport, Cairo"),
                         bio: data.user?.bio || null,
                         logoUrl: data.user?.logoUrl || "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=60",
                         facebook: data.user?.facebook || "https://facebook.com",
                         instagram: data.user?.instagram || "https://instagram.com",
-                        priceLabel: data.category === 'dress' ? 'إيجار' : 'يبدأ من',
-                        price: data.price || "0 ج.م",
+                        priceLabel: data.category === 'dress' 
+                            ? (lang === 'ar' ? 'إيجار' : 'Rent') 
+                            : (lang === 'ar' ? 'يبدأ من' : 'Starts from'),
+                        price: (data.price || "0").replace("ج.م", lang === 'ar' ? "ج.م" : "EGP"),
                         image: data.imageUrl || "https://via.placeholder.com/500",
-                        vendorName: data.user ? data.user.fullName : "إدارة الخدمة"
+                        vendorName: data.user ? data.user.fullName : (lang === 'ar' ? "إدارة الخدمة" : "Service Admin")
                     });
                 }
                 
@@ -154,9 +164,9 @@ export default function ServiceDetails() {
     const [animateImage, setAnimateImage] = useState(false);
 
     // Form State
-    const [eventType, setEventType] = useState("زفاف");
+    const [eventType, setEventType] = useState("booking_type_wedding");
     const [bookingDate, setBookingDate] = useState("");
-    const [guests, setGuests] = useState("100 - 300 شخص");
+    const [guests, setGuests] = useState("guests_100_300");
 
     useEffect(() => {
         if (service) setMainImage(service.image);
@@ -206,8 +216,8 @@ export default function ServiceDetails() {
                     <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-[#8c71af] animate-spin"></div>
                     <div className="absolute inset-2 rounded-full border-4 border-b-transparent border-pink-300 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 animate-pulse">جاري تحميل التفاصيل... ✨</h3>
-                <p className="text-xs text-gray-400 mt-2 font-medium">بندور على أحلى التفاصيل لليلة عمرك</p>
+                <h3 className="text-xl font-bold text-gray-700 animate-pulse">{t("loading_details")}</h3>
+                <p className="text-xs text-gray-400 mt-2 font-medium">{t("loading_details_sub")}</p>
             </div>
         );
     }
@@ -216,9 +226,9 @@ export default function ServiceDetails() {
         return (
             <div className="flex-1 flex flex-col items-center justify-center py-32 text-center">
                 <div className="text-6xl mb-4">🔍</div>
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">عذراً، الخدمة غير موجودة</h2>
-                <p className="text-gray-500 mb-6">الخدمة التي تبحثون عنها غير متاحة أو تم إزالتها.</p>
-                <Link href="/services"><button className="bg-gradient-primary text-white px-8 py-3 rounded-xl font-bold shadow-md hover:opacity-90 transition">العودة للخدمات</button></Link>
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">{t("service_not_found")}</h2>
+                <p className="text-gray-500 mb-6">{t("service_not_found_desc")}</p>
+                <Link href="/services"><button className="bg-gradient-primary text-white px-8 py-3 rounded-xl font-bold shadow-md hover:opacity-90 transition">{t("btn_back_services")}</button></Link>
             </div>
         );
     }
@@ -231,19 +241,27 @@ export default function ServiceDetails() {
         }
 
         if (service.category === 'venue') {
-            return `تقدم ${service.name} تجربة لا تُنسى بأفضل المعايير. مساحة واسعة، ديكورات مودرن بأحدث صيحات 2026، وفريق كامل لتنظيم الإضاءة والصوت لضمان ليلة عمر مثالية.`;
+            return lang === 'ar' 
+                ? `تقدم ${service.name} تجربة لا تُنسى بأفضل المعايير. مساحة واسعة، ديكورات مودرن بأحدث صيحات 2026، وفريق كامل لتنظيم الإضاءة والصوت لضمان ليلة عمر مثالية.`
+                : `${service.name} offers an unforgettable experience with the highest standards. Spacious area, modern decorations with the latest 2026 trends, and a full team for light and sound to guarantee a perfect special night.`;
         } else if (service.category === 'dress') {
-            return `تألقي في ليلة العمر مع ${service.name}. الفستان مصنوع من أجود الخامات بأحدث التصميمات العالمية ليمنحك إطلالة ملكية تخطف الأنظار. متوفر بمقاسات مختلفة مع إمكانية التعديل.`;
+            return lang === 'ar' 
+                ? `تألقي في ليلة العمر مع ${service.name}. الفستان مصنوع من أجود الخامات بأحدث التصميمات العالمية ليمنحك إطلالة ملكية تخطف الأنظار. متوفر بمقاسات مختلفة مع إمكانية التعديل.`
+                : `Shine on your special night with ${service.name}. The dress is made of the finest imported fabrics with the latest international designs to give you a royal look that steals the spotlight. Available in different sizes with free alterations.`;
         } else if (service.category === 'makeup') {
-            return `احصلي على إطلالة مثالية تدوم طوال اليوم مع ${service.name}. نستخدم أفضل الماركات العالمية لضمان ثبات الميك أب وإبراز جمالك الطبيعي في أهم يوم بحياتك.`;
+            return lang === 'ar' 
+                ? `احصلي على إطلالة مثالية تدوم طوال اليوم مع ${service.name}. نستخدم أفضل الماركات العالمية لضمان ثبات الميك أب وإبراز جمالك الطبيعي في أهم يوم بحياتك.`
+                : `Get a perfect look that lasts all day with ${service.name}. We use top international brands to ensure long-lasting makeup and highlight your natural beauty on your most important day.`;
         } else {
-            return `نتميز بتقديم خدمة ${service.name} بأعلى مستوى من الاحترافية والجودة. اختيارك الأمثل ليومك المميز في ${service.location}.`;
+            return lang === 'ar' 
+                ? `نتميز بتقديم خدمة ${service.name} بأعلى مستوى من الاحترافية والجودة. اختيارك الأمثل ليومك المميز في ${service.location}.`
+                : `We are distinguished by offering ${service.name} services with the highest level of professionalism and quality. Your perfect choice for your special day in ${service.location}.`;
         }
     };
 
     const renderFeatures = () => {
         if (service.category === 'venue') {
-            return (
+            return lang === 'ar' ? (
                 <>
                     <li className="flex items-center gap-2">✅ تكييف مركزي</li>
                     <li className="flex items-center gap-2">✅ جراج خاص (Parking)</li>
@@ -252,9 +270,18 @@ export default function ServiceDetails() {
                     <li className="flex items-center gap-2">✅ دي جي وساوند سيستم</li>
                     <li className="flex items-center gap-2">✅ تصوير فيديو HD</li>
                 </>
+            ) : (
+                <>
+                    <li className="flex items-center gap-2">✅ Central AC</li>
+                    <li className="flex items-center gap-2">✅ Private Parking</li>
+                    <li className="flex items-center gap-2">✅ Bridal Room</li>
+                    <li className="flex items-center gap-2">✅ Open Buffet</li>
+                    <li className="flex items-center gap-2">✅ DJ & Sound System</li>
+                    <li className="flex items-center gap-2">✅ HD Video Shooting</li>
+                </>
             );
         } else if (service.category === 'dress') {
-            return (
+            return lang === 'ar' ? (
                 <>
                     <li className="flex items-center gap-2">✅ خامات مستوردة عالية الجودة</li>
                     <li className="flex items-center gap-2">✅ مقاسات مختلفة وتعديلات مجانية</li>
@@ -263,14 +290,30 @@ export default function ServiceDetails() {
                     <li className="flex items-center gap-2">✅ بروفة قبل الموعد بـ 3 أيام</li>
                     <li className="flex items-center gap-2">✅ الغسيل والكي مجاني</li>
                 </>
+            ) : (
+                <>
+                    <li className="flex items-center gap-2">✅ High-Quality Imported Fabrics</li>
+                    <li className="flex items-center gap-2">✅ Various Sizes & Free Alterations</li>
+                    <li className="flex items-center gap-2">✅ Latest 2026 Designs</li>
+                    <li className="flex items-center gap-2">✅ Matching Veil & Accessories</li>
+                    <li className="flex items-center gap-2">✅ Fitting 3 Days Before Date</li>
+                    <li className="flex items-center gap-2">✅ Free Cleaning & Ironing</li>
+                </>
             );
         } else {
-            return (
+            return lang === 'ar' ? (
                 <>
                     <li className="flex items-center gap-2">✅ خدمة عملاء 24/7</li>
                     <li className="flex items-center gap-2">✅ التزام تام بالمواعيد</li>
                     <li className="flex items-center gap-2">✅ أسعار تنافسية</li>
                     <li className="flex items-center gap-2">✅ أعلى جودة في التنفيذ</li>
+                </>
+            ) : (
+                <>
+                    <li className="flex items-center gap-2">✅ 24/7 Customer Service</li>
+                    <li className="flex items-center gap-2">✅ Full Punctuality & Commitment</li>
+                    <li className="flex items-center gap-2">✅ Competitive Prices</li>
+                    <li className="flex items-center gap-2">✅ Highest Execution Quality</li>
                 </>
             );
         }
@@ -278,8 +321,8 @@ export default function ServiceDetails() {
     return (<>
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-3 text-sm text-gray-500 flex items-center gap-2">
-          <Link href="/" className="hover:text-[#8c71af] transition">الرئيسية</Link> <span>/</span>
-          <Link href={`/services?category=${service.category}`} className="hover:text-[#8c71af] transition">{service.category === 'venue' ? 'القاعات' : service.category === 'dress' ? 'الفساتين' : 'الخدمات'}</Link> <span>/</span>
+          <Link href="/" className="hover:text-[#8c71af] transition">{t("path_home")}</Link> <span>/</span>
+          <Link href={`/services?category=${service.category}`} className="hover:text-[#8c71af] transition">{service.category === 'venue' ? t("path_venues") : service.category === 'dress' ? t("path_dresses") : t("path_services")}</Link> <span>/</span>
           <span className="text-gray-800 font-bold">{service.name}</span>
         </div>
       </div>
@@ -293,7 +336,7 @@ export default function ServiceDetails() {
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
               <div className="h-[400px] overflow-hidden rounded-xl mb-4 relative group">
                 <img src={mainImage} className={`w-full h-full object-cover transition-opacity duration-300 ${animateImage ? 'opacity-50' : 'opacity-100'}`} alt={service.name}/>
-                <span className="absolute top-4 right-4 bg-gradient-primary text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">{service.typeLabel} مميز</span>
+                <span className="absolute top-4 right-4 bg-gradient-primary text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">{service.typeLabel} {t("featured_label")}</span>
               </div>
               <div className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
                 {images.map((img, idx) => (<img key={idx} onClick={() => handleImageChange(img)} src={img} className={`w-24 h-24 rounded-lg object-cover cursor-pointer border-2 transition-all duration-200 ${mainImage === img ? ' opacity-100 border-[#8c71af]' : 'border-transparent opacity-70 hover:opacity-100'}`} alt="Thumbnail"/>))}
@@ -313,12 +356,12 @@ export default function ServiceDetails() {
                       <div className="flex text-yellow-500 text-lg mb-1">
                         {"★".repeat(Math.round(parseFloat(averageRating)))}{"☆".repeat(5-Math.round(parseFloat(averageRating)))}
                       </div>
-                      <span className="text-sm text-gray-400 font-bold">{averageRating} ({reviewsCount} تقييم)</span>
+                      <span className="text-sm text-gray-400 font-bold">{averageRating} ({reviewsCount} {t("reviews_label")})</span>
                     </>
                   ) : (
                     <>
                       <div className="flex text-gray-300 text-lg mb-1">☆☆☆☆☆</div>
-                      <span className="text-sm text-gray-400 font-medium">لا توجد تقييمات</span>
+                      <span className="text-sm text-gray-400 font-medium">{t("no_reviews")}</span>
                     </>
                   )}
                 </div>
@@ -326,12 +369,12 @@ export default function ServiceDetails() {
 
               <div className="border-t border-gray-100 my-6"></div>
 
-              <h3 className="text-xl font-bold text-gray-800 mb-4">عن {service.typeLabel}</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t("about_label")} {service.typeLabel}</h3>
               <p className="text-gray-600 leading-relaxed mb-6 whitespace-pre-wrap">
                 {renderDescription()}
               </p>
 
-              <h3 className="text-xl font-bold text-gray-800 mb-4">المميزات</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t("features_label")}</h3>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
                 {renderFeatures()}
               </ul>
@@ -340,20 +383,20 @@ export default function ServiceDetails() {
             {/* Reviews */}
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 space-y-8">
               <div>
-                <h3 className="text-xl font-bold text-gray-800 mb-1">آراء العرايس ({reviewsCount})</h3>
-                <p className="text-sm text-gray-500">آراء وتجارب حقيقية من عرايس زغروطة</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-1">{t("reviews_title")} ({reviewsCount})</h3>
+                <p className="text-sm text-gray-500">{t("reviews_subtitle")}</p>
               </div>
               
               {loadingReviews ? (
-                <div className="text-gray-500 text-center py-4">جاري تحميل الآراء...</div>
+                <div className="text-gray-500 text-center py-4">{t("loading_reviews")}</div>
               ) : reviews.length === 0 ? (
                 <div className="bg-gray-50/50 rounded-2xl p-6 text-center border border-dashed border-gray-100">
-                  <p className="text-gray-500 text-sm">لا توجد آراء بعد. كوني أول من يشاركنا رأيه!</p>
+                  <p className="text-gray-500 text-sm">{t("no_reviews_placeholder")}</p>
                 </div>
               ) : (
                 <div className="space-y-6">
                   {reviews.map((r, index) => {
-                    const initials = r.user?.fullName ? r.user.fullName.trim().charAt(0) : "ع";
+                    const initials = r.user?.fullName ? r.user.fullName.trim().charAt(0) : (lang === 'ar' ? "ع" : "U");
                     return (
                       <div key={r.id}>
                         {index > 0 && <hr className="border-gray-100 mb-6"/>}
@@ -363,7 +406,7 @@ export default function ServiceDetails() {
                           </div>
                           <div className="flex-1">
                             <div className="flex justify-between items-start">
-                              <h4 className="font-bold text-gray-800">{r.user?.fullName || "عروسة مجهولة"}</h4>
+                              <h4 className="font-bold text-gray-800">{r.user?.fullName || (lang === 'ar' ? "عروسة مجهولة" : "Anonymous Bride")}</h4>
                               <span className="text-xs text-gray-400">{r.createdAt ? r.createdAt.split(' ')[0] : ''}</span>
                             </div>
                             <div className="text-yellow-500 text-xs mb-1">
@@ -450,17 +493,22 @@ export default function ServiceDetails() {
 
               <form className="space-y-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">نوع المناسبة</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">{t("booking_type")}</label>
                   <CustomSelect 
                     value={eventType}
                     onChange={(e) => setEventType(e.target.value)}
-                    options={["خطوبة", "عقد قران", "زفاف", "حفلة تخرج"]}
+                    options={[
+                      { value: "booking_type_engagement", label: t("booking_type_engagement") },
+                      { value: "booking_type_marriage", label: t("booking_type_marriage") },
+                      { value: "booking_type_wedding", label: t("booking_type_wedding") },
+                      { value: "booking_type_graduation", label: t("booking_type_graduation") }
+                    ]}
                     className="p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#8c71af] text-gray-700 font-bold hover:border-[#8c71af] transition"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">تاريخ المناسبة</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">{t("booking_date")}</label>
                   <input 
                     type="date" 
                     required 
@@ -471,11 +519,16 @@ export default function ServiceDetails() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">عدد المدعوين</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">{t("booking_guests")}</label>
                   <CustomSelect 
                     value={guests}
                     onChange={(e) => setGuests(e.target.value)}
-                    options={["أقل من 100", "100 - 300 شخص", "300 - 500 شخص", "أكثر من 500 شخص"]}
+                    options={[
+                      { value: "guests_under_100", label: t("guests_under_100") },
+                      { value: "guests_100_300", label: t("guests_100_300") },
+                      { value: "guests_300_500", label: t("guests_300_500") },
+                      { value: "guests_over_500", label: t("guests_over_500") }
+                    ]}
                     className="p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#8c71af] text-gray-700 font-bold hover:border-[#8c71af] transition"
                   />
                 </div>
@@ -487,7 +540,7 @@ export default function ServiceDetails() {
                       disabled={!bookingDate} 
                       className="w-full bg-gradient-primary text-white py-3.5 rounded-xl font-bold shadow-md hover:opacity-95 hover:shadow-lg transition transform hover:-translate-y-0.5 flex justify-center items-center gap-2 text-base disabled:opacity-50 disabled:transform-none cursor-pointer"
                     >
-                      <span>📅</span> احجز الميعاد
+                      <span>📅</span> {t("btn_book")}
                     </button>
                   </Link>
 
@@ -496,19 +549,21 @@ export default function ServiceDetails() {
                     onClick={() => { setIsChatOpen(true); setChatSent(false); }}
                     className="w-full bg-white border border-[#8c71af]/40 text-[#8c71af] py-3 rounded-xl font-bold hover:bg-[#8c71af]/5 transition flex justify-center items-center gap-2 cursor-pointer text-sm shadow-sm"
                   >
-                    <span>💬</span> شات مع المورد
+                    <span>💬</span> {t("btn_chat")}
                   </button>
                 </div>
               </form>
 
               <div className="mt-6 pt-6 border-t text-center">
-                <p className="text-xs text-gray-400 mb-3">هذا المورد موثوق وتم التحقق منه ✅</p>
+                <p className="text-xs text-gray-400 mb-3">{t("verified_vendor")}</p>
                 <div className="flex items-center justify-center gap-3">
                   <img src={service.logoUrl} className="w-12 h-12 rounded-full object-cover border-2 border-pink-100 shadow-sm" alt="Vendor Logo"/>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-gray-800">إدارة {service.vendorName || service.name}</p>
+                    <p className="text-sm font-bold text-gray-800">
+                      {lang === 'ar' ? `إدارة ${service.vendorName || service.name}` : `${service.vendorName || service.name} Admin`}
+                    </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <p className="text-xs text-gray-500">متواجد للرد السريع</p>
+                      <p className="text-xs text-gray-500">{t("fast_response")}</p>
                       {(service.facebook || service.instagram) && <span className="text-gray-300">|</span>}
                       {service.facebook && (
                           <a href={service.facebook} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-700 transition">
@@ -530,7 +585,7 @@ export default function ServiceDetails() {
 
         {/* Similar items */}
         <div className="mt-16">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">ممكن يعجبك كمان</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">{t("similar_offers")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {allServices.filter(s => s.category === service.category && s.id !== service.id).slice(0, 3).map(similar => (
                 <Link key={similar.id} href={`/services/${similar.id}`} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition block">
@@ -549,34 +604,34 @@ export default function ServiceDetails() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center p-4 backdrop-blur-sm" onClick={() => setIsChatOpen(false)}>
           <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95" onClick={(e) => e.stopPropagation()}>
             <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-              <h3 className="font-bold text-gray-800">💬 رسالة لـ {service?.vendorName}</h3>
+              <h3 className="font-bold text-gray-800">💬 {t("chat_title")} {service?.vendorName || service?.name}</h3>
               <button onClick={() => setIsChatOpen(false)} className="text-gray-400 hover:text-red-500 transition text-xl">✕</button>
             </div>
             <div className="p-5">
               {chatSent ? (
                 <div className="text-center py-6">
                   <div className="text-5xl mb-3">✅</div>
-                  <p className="font-bold text-gray-800">تم إرسال رسالتك!</p>
-                  <p className="text-sm text-gray-500 mt-1">هيرد عليك المورد قريباً</p>
-                  <button onClick={() => setIsChatOpen(false)} className="mt-4 bg-gradient-primary text-white px-6 py-2.5 rounded-xl font-bold hover:opacity-90 transition">تمام</button>
+                  <p className="font-bold text-gray-800">{t("chat_success")}</p>
+                  <p className="text-sm text-gray-500 mt-1">{t("chat_success_desc")}</p>
+                  <button onClick={() => setIsChatOpen(false)} className="mt-4 bg-gradient-primary text-white px-6 py-2.5 rounded-xl font-bold hover:opacity-90 transition">{t("chat_ok")}</button>
                 </div>
               ) : (
                 <>
-                  <p className="text-sm text-gray-500 mb-3">اكتب رسالتك للمورد وهيرد عليك في أقرب وقت</p>
+                  <p className="text-sm text-gray-500 mb-3">{t("chat_prompt")}</p>
                   <textarea
                     value={chatMessage}
                     onChange={(e) => setChatMessage(e.target.value)}
-                    placeholder="مثال: هل القاعة متاحة في مايو؟"
+                    placeholder={t("chat_placeholder")}
                     rows={4}
                     className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#8c71af]/30 focus:border-[#8c71af] resize-none transition"
                   />
-                  {!user && <p className="text-xs text-red-500 mt-1">يجب تسجيل الدخول أولاً لإرسال رسالة</p>}
+                  {!user && <p className="text-xs text-red-500 mt-1">{t("chat_login_required")}</p>}
                   <button
                     onClick={handleSendChat}
                     disabled={!chatMessage.trim() || chatSending}
                     className="mt-3 w-full bg-gradient-primary text-white py-3 rounded-xl font-bold shadow-md hover:opacity-90 transition disabled:opacity-50 cursor-pointer"
                   >
-                    {chatSending ? "جاري الإرسال..." : "إرسال الرسالة 📨"}
+                    {chatSending ? t("chat_sending") : t("chat_send")}
                   </button>
                 </>
               )}

@@ -4,8 +4,10 @@ import { Menu, X, User, LogOut, ChevronDown, Bell, MessageSquare } from "lucide-
 import { useAuth } from "../../hooks/use-auth";
 import { useBookings } from "../../hooks/use-bookings";
 import { API_URL } from "../../config";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function Navbar() {
+  const { lang, toggleLanguage, t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -71,9 +73,9 @@ export default function Navbar() {
   );
 
   const navLinks = [
-    { name: "الرئيسية", path: "/" },
-    { name: "الخدمات", path: "/services" },
-    { name: "تواصل معنا", path: "/contact" },
+    { name: t("nav_home"), path: "/" },
+    { name: t("nav_services"), path: "/services" },
+    { name: t("nav_contact"), path: "/contact" },
   ];
 
   return (
@@ -84,7 +86,7 @@ export default function Navbar() {
             href="/"
             className="text-3xl font-extrabold text-gradient-primary tracking-wider flex items-center gap-2"
           >
-            <span className="text-white">✨</span> زغروطة
+            <span className="text-white">✨</span> {lang === 'ar' ? 'زغروطة' : 'Zagrouta'}
           </Link>
 
           <ul className="hidden md:flex flex gap-8 font-bold">
@@ -100,13 +102,19 @@ export default function Navbar() {
             ))}
           </ul>
 
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 text-gray-600 hover-text-gradient-primary font-bold px-3 py-1.5 rounded-full border border-gray-200 hover:border-[#8c71af]/30 transition shadow-sm bg-white cursor-pointer text-sm"
+            >
+              <span>🌐</span> {lang === "ar" ? "English" : "عربي"}
+            </button>
             {!user ? (
               <Link
                 href="/auth"
                 className="bg-gradient-primary text-white px-6 py-2.5 rounded-full font-bold hover:opacity-90 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 inline-block"
               >
-                دخول / تسجيل
+                {t("nav_login")}
               </Link>
             ) : (
               <div className="flex items-center">
@@ -128,13 +136,13 @@ export default function Navbar() {
                   {isNotificationsOpen && (
                     <div className="absolute left-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 max-h-96 flex flex-col">
                       <div className="p-3 border-b border-gray-100 bg-gray-50 font-bold text-sm text-gray-700 flex justify-between items-center">
-                        الإشعارات
+                        {t("nav_notifications")}
                         {visibleNotifications.length > 0 && (
                           <button
                             onClick={clearAllNotifications}
                             className="text-xs text-border hover:underline font-semibold"
                           >
-                            مسح الكل
+                            {t("nav_clear_all")}
                           </button>
                         )}
                       </div>
@@ -142,7 +150,7 @@ export default function Navbar() {
                         {visibleNotifications.length === 0 ? (
                           <div className="p-4 text-center text-sm text-gray-500">
                             <div className="text-3xl mb-2">🔔</div>
-                            لا توجد إشعارات جديدة
+                            {t("nav_no_notifications")}
                           </div>
                         ) : (
                           visibleNotifications.map((notif) => (
@@ -179,7 +187,7 @@ export default function Navbar() {
                   <Link
                     href="/user-profile?tab=messages"
                     className="relative mx-3 text-gray-500 hover:text-[#8c71af] transition flex items-center justify-center cursor-pointer"
-                    title="رسائلي"
+                    title={t("nav_messages")}
                   >
                     <MessageSquare size={20} />
                     {unreadMsgCount > 0 && (
@@ -197,7 +205,7 @@ export default function Navbar() {
                     className="text-gray-700 font-bold px-4 flex items-center gap-2 hover-text-gradient-primary transition cursor-pointer"
                   >
                     <User size={20} className="text-border" />
-                    أهلاً بك، {user.fullName || "يا عروسة"}
+                    {t("nav_welcome")}{user.fullName || t("nav_guest")}
                     <ChevronDown
                       size={16}
                       className={`transition-transform text-gray-700 ${isDropdownOpen ? "rotate-180" : ""}`}
@@ -212,14 +220,14 @@ export default function Navbar() {
                         className="block px-4 py-3 hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 text-gray-700 hover-text-gradient-primary transition font-bold flex items-center gap-2 border-b border-gray-50"
                       >
                         <User size={16} className="text-border" />
-                        حسابي
+                        {t("nav_profile")}
                       </Link>
                       <button
                         onClick={handleLogout}
                         className="w-full text-right px-4 py-3 hover:bg-red-50 text-red-600 transition font-bold flex items-center gap-2"
                       >
                         <LogOut size={16} className="text-red-500" />
-                        تسجيل خروج
+                        {t("nav_logout")}
                       </button>
                     </div>
                   )}
@@ -253,30 +261,39 @@ export default function Navbar() {
                 </li>
               ))}
 
+              <li>
+                <button
+                  onClick={() => { toggleLanguage(); closeMenu(); }}
+                  className="w-full py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition flex items-center justify-center gap-2 cursor-pointer text-sm"
+                >
+                  <span>🌐</span> {lang === "ar" ? "English" : "عربي"}
+                </button>
+              </li>
+
               {user ? (
                 <>
                   <li className="mt-2 border-t pt-2">
                     <span className="block py-2 text-gray-500 font-bold">
-                      أهلاً بك، {user.fullName || "يا عروسة"}
+                      {t("nav_welcome")}{user.fullName || t("nav_guest")}
                     </span>
                   </li>
                   <li>
                     <Link
                       href="/user-profile"
                       onClick={closeMenu}
-                      className="block py-3 text-[#8c71af] rounded-xl flex items-center justify-center gap-2 font-bold bg-[#8c71af]/10 hover:bg-[#8c71af]/20 transition"
+                      className="block py-3 text-[#8c71af] rounded-xl flex items-center justify-center gap-2 font-bold bg-[#8c71af]/10 hover:bg-[#8c71af]/20 transition text-sm"
                     >
                       <User size={18} />
-                      حسابي
+                      {t("nav_profile")}
                     </Link>
                   </li>
                   <li>
                     <button
                       onClick={handleLogout}
-                      className="w-full block py-3 text-red-600 rounded-xl flex items-center justify-center gap-2 font-bold hover:bg-red-50 transition border border-transparent"
+                      className="w-full block py-3 text-red-600 rounded-xl flex items-center justify-center gap-2 font-bold hover:bg-red-50 transition border border-transparent cursor-pointer text-sm"
                     >
                       <LogOut size={18} />
-                      تسجيل خروج
+                      {t("nav_logout")}
                     </button>
                   </li>
                 </>
@@ -285,9 +302,9 @@ export default function Navbar() {
                   <Link
                     href="/auth"
                     onClick={closeMenu}
-                    className="block bg-gradient-primary text-white py-3 rounded-xl shadow-md mt-2 transition hover:opacity-90"
+                    className="block bg-gradient-primary text-white py-3 rounded-xl shadow-md mt-2 transition hover:opacity-90 text-sm"
                   >
-                    دخول / تسجيل
+                    {t("nav_login")}
                   </Link>
                 </li>
               )}

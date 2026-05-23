@@ -50,7 +50,7 @@ export function CustomSelect({ value, onChange, options, placeholder, className 
                       if (onChange) onChange({ target: { value: optValue } });
                       setIsOpen(false);
                     }}
-                    className={`w-full text-right px-4 py-3 font-bold transition flex items-center justify-between ${isSelected ? 'bg-gradient-to-br from-blue-50 to-pink-50 text-[#8c71af]' : 'text-gray-600 hover:bg-gray-50 hover-text-gradient-primary'}`}
+                    className={`w-full text-start px-4 py-3 font-bold transition flex items-center justify-between ${isSelected ? 'bg-gradient-to-br from-blue-50 to-pink-50 text-[#8c71af]' : 'text-gray-600 hover:bg-gray-50 hover-text-gradient-primary'}`}
                   >
                     {optLabel}
                     {isSelected && <span className="text-[#8c71af]">✔</span>}

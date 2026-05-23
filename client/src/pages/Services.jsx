@@ -5,8 +5,10 @@ import { useAuth } from "../hooks/use-auth";
 import { useFavorites } from "../hooks/use-favorites";
 import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "../config";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function Services() {
+    const { lang, t } = useLanguage();
     const [location] = useLocation();
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [servicesData, setServicesData] = useState([]);
@@ -22,11 +24,19 @@ export default function Services() {
                         id: s.id,
                         name: s.name,
                         category: s.category || 'venue',
-                        typeLabel: s.category === 'venue' ? 'قاعة' : s.category === 'dress' ? 'فستان' : s.category === 'makeup' ? 'ميك أب' : 'تصوير',
+                        typeLabel: s.category === 'venue' 
+                            ? (lang === 'ar' ? 'قاعة' : 'Venue') 
+                            : s.category === 'dress' 
+                            ? (lang === 'ar' ? 'فستان' : 'Dress') 
+                            : s.category === 'makeup' 
+                            ? (lang === 'ar' ? 'ميك أب' : 'Makeup') 
+                            : (lang === 'ar' ? 'تصوير' : 'Photography'),
                         rating: "4.9",
-                        location: s.location || "القاهرة",
-                        priceLabel: s.category === 'dress' ? 'إيجار' : 'يبدأ من',
-                        price: s.price || "0 ج.م",
+                        location: s.location || (lang === 'ar' ? "القاهرة" : "Cairo"),
+                        priceLabel: s.category === 'dress' 
+                            ? (lang === 'ar' ? 'إيجار' : 'Rent') 
+                            : (lang === 'ar' ? 'يبدأ من' : 'Starts from'),
+                        price: (s.price || "0").replace("ج.م", lang === 'ar' ? "ج.م" : "EGP"),
                         image: s.imageUrl || "https://via.placeholder.com/500"
                     }));
                     setServicesData(formattedData);
@@ -87,8 +97,8 @@ export default function Services() {
         e.preventDefault();
         if (!user) {
             toast({
-                title: "تسجيل الدخول مطلوب 🔒",
-                description: "لازم تسجل دخول الأول عشان تقدر تحفظ في المفضلة.",
+                title: lang === 'ar' ? "تسجيل الدخول مطلوب 🔒" : "Login Required 🔒",
+                description: lang === 'ar' ? "لازم تسجل دخول الأول عشان تقدر تحفظ في المفضلة." : "You must log in first to save favorites.",
                 variant: "destructive"
             });
             return;
@@ -98,13 +108,13 @@ export default function Services() {
         
         if (favorites.includes(id)) {
             toast({
-                title: "مسحتني من المفضله ليه 🥲🥹",
-                description: "طب هجيلك في المنام 🎃",
+                title: lang === 'ar' ? "مسحتني من المفضله ليه 🥲🥹" : "Why did you remove me? 🥲🥹",
+                description: lang === 'ar' ? "طب هجيلك في المنام 🎃" : "I will visit you in your dreams! 🎃",
             });
         } else {
             toast({
-                title: "تم الحفظ في المفضلة ❤️",
-                description: "تقدر تشوفها في حسابك في أي وقت.",
+                title: lang === 'ar' ? "تم الحفظ في المفضلة ❤️" : "Saved to Favorites ❤️",
+                description: lang === 'ar' ? "تقدر تشوفها في حسابك في أي وقت." : "You can check it in your profile anytime.",
                 className: "bg-green-50 border-green-200"
             });
         }
@@ -157,22 +167,22 @@ export default function Services() {
 
     return (<div className="container mx-auto px-4 py-8 flex-1">
       <button onClick={toggleFilter} className="md:hidden w-full bg-white border border-gray-200 text-gray-700 font-bold py-3 rounded-xl mb-6 flex items-center justify-center gap-2 shadow-sm">
-        <span>⚙️</span> تصفية النتائج
+        <span>⚙️</span> {t("filter_btn_mobile")}
       </button>
 
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar Filters */}
         <aside className={`${isFilterOpen ? 'block' : 'hidden'} md:block w-full md:w-1/4 bg-white p-6 rounded-2xl shadow-sm h-fit border border-gray-100 sticky top-24`}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="font-bold text-xl">البحث المتقدم</h2>
+            <h2 className="font-bold text-xl">{t("filter_title")}</h2>
             <button onClick={toggleFilter} className="md:hidden text-gray-400">✕</button>
           </div>
 
           <div className="mb-6 relative">
             <input 
               type="text" 
-              placeholder="اسم القاعة، الفستان..." 
-              className="w-full pl-10 pr-4 py-3 bg-gray-50 border  rounded-xl focus:ring-2 focus:ring-[#8c71af] focus:outline-none transition"
+              placeholder={t("filter_search")}
+              className="w-full pl-10 pr-4 py-3 bg-gray-50 border  rounded-xl focus:ring-2 focus:ring-[#8c71af] focus:outline-none transition text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -180,7 +190,7 @@ export default function Services() {
           </div>
           
           <div className="mb-6">
-            <h3 className="font-bold mb-3 text-sm text-gray-500 uppercase">القسم</h3>
+            <h3 className="font-bold mb-3 text-sm text-gray-500 uppercase">{t("filter_cat")}</h3>
             <div className="space-y-2">
               <label className="flex items-center gap-3 cursor-pointer hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/20 border border-transparent p-2 rounded-lg transition">
                 <input 
@@ -190,7 +200,7 @@ export default function Services() {
                   checked={selectedCategory === "all"}
                   onChange={() => setSelectedCategory("all")}
                 />
-                <span className="font-bold text-gray-700">الكل</span>
+                <span className="font-bold text-gray-700">{t("filter_cat_all")}</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/20 border border-transparent p-2 rounded-lg transition">
                 <input 
@@ -200,7 +210,7 @@ export default function Services() {
                   checked={selectedCategory === "venue"}
                   onChange={() => setSelectedCategory("venue")}
                 />
-                <span className="font-bold text-gray-700">قاعات أفراح</span>
+                <span className="font-bold text-gray-700">{t("filter_cat_venue")}</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/20 border border-transparent p-2 rounded-lg transition">
                 <input 
@@ -210,7 +220,7 @@ export default function Services() {
                   checked={selectedCategory === "dress"}
                   onChange={() => setSelectedCategory("dress")}
                 />
-                <span className="font-bold text-gray-700">فساتين زفاف</span>
+                <span className="font-bold text-gray-700">{t("filter_cat_dress")}</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/20 border border-transparent p-2 rounded-lg transition">
                 <input 
@@ -220,7 +230,7 @@ export default function Services() {
                   checked={selectedCategory === "makeup"}
                   onChange={() => setSelectedCategory("makeup")}
                 />
-                <span className="font-bold text-gray-700">ميك أب آرتيست</span>
+                <span className="font-bold text-gray-700">{t("filter_cat_makeup")}</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer hover:bg-gradient-to-br hover:from-blue-50 hover:to-pink-50 hover:border-border/20 border border-transparent p-2 rounded-lg transition">
                 <input 
@@ -230,18 +240,18 @@ export default function Services() {
                   checked={selectedCategory === "photography"}
                   onChange={() => setSelectedCategory("photography")}
                 />
-                <span className="font-bold text-gray-700">تصوير</span>
+                <span className="font-bold text-gray-700">{t("filter_cat_photo")}</span>
               </label>
             </div>
           </div>
 
           <div className="mb-6">
-            <h3 className="font-bold mb-3 text-sm text-gray-500 uppercase">الحد الأقصى للسعر</h3>
+            <h3 className="font-bold mb-3 text-sm text-gray-500 uppercase">{t("filter_max_price")}</h3>
             
             <input type="range" dir="ltr" className="w-full accent-primary h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mb-4" min="1000" max="100000" step="500" value={priceLimit} onChange={(e) => setPriceLimit(parseInt(e.target.value))}/>
             
             <div className="flex items-center gap-2">
-              <span className="text-gray-400 font-bold text-sm">أقصى سعر:</span>
+              <span className="text-gray-400 font-bold text-sm">{t("filter_max_price_label")}</span>
               <input type="number" className="w-full p-2 border border-gray-300 rounded-lg text-gradient-primary font-bold text-center focus:ring-2 focus:ring-[#8c71af] outline-none" value={priceLimit} 
                 onChange={(e) => setPriceLimit(e.target.value === '' ? '' : parseInt(e.target.value))}
                 onBlur={(e) => {
@@ -250,29 +260,33 @@ export default function Services() {
                   else if (val > 100000) setPriceLimit(100000);
                 }}
               />
-              <span className="text-gray-400 font-bold text-sm">ج.م</span>
+              <span className="text-gray-400 font-bold text-sm">{t("filter_currency")}</span>
             </div>
           </div>
 
-          <button onClick={handleApplyFilters} disabled={isFiltering} className="w-full bg-gradient-primary text-white py-3 rounded-xl font-bold cursor-pointer transition-all duration-300 shadow-md hover:shadow-[0_0_15px_rgba(140,113,175,0.6)] hover:-translate-y-1 hover:brightness-110 flex items-center justify-center gap-2">
+          <button onClick={handleApplyFilters} disabled={isFiltering} className="w-full bg-gradient-primary text-white py-3 rounded-xl font-bold cursor-pointer transition-all duration-300 shadow-md hover:shadow-[0_0_15px_rgba(140,113,175,0.6)] hover:-translate-y-1 hover:brightness-110 flex items-center justify-center gap-2 text-sm">
             {isFiltering ? (
               <>
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                جاري البحث...
+                {t("filter_loading")}
               </>
-            ) : "تطبيق الفلتر"}
+            ) : t("filter_apply")}
           </button>
         </aside>
 
         {/* Main Content */}
         <section className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">أحدث العروض <span className="text-gradient-primary text-sm font-bold ml-2">({sortedServices.length} نتيجة)</span></h1>
+            <h1 className="text-2xl font-bold text-gray-800">{t("results_offers")} <span className="text-gradient-primary text-sm font-bold ml-2">({sortedServices.length} {t("results_count")})</span></h1>
             <div className="w-48">
               <CustomSelect 
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
-                options={["الأحدث", "الأقل سعراً", "الأعلى تقييماً"]}
+                options={[
+                  { value: "الأحدث", label: t("sort_latest") },
+                  { value: "الأقل سعراً", label: t("sort_price_low") },
+                  { value: "الأعلى تقييماً", label: t("sort_rating") }
+                ]}
                 className="bg-white border text-gray-700 font-bold p-2.5 rounded-lg text-sm focus:ring-1 focus:ring-[#8c71af] hover:border-[#8c71af] transition"
               />
             </div>
@@ -298,7 +312,7 @@ export default function Services() {
                    <div className="relative w-12 h-12 mb-4">
                        <div className="absolute inset-0 rounded-full border-3 border-t-transparent border-[#8c71af] animate-spin"></div>
                    </div>
-                   <p className="text-gray-500 font-bold animate-pulse">جاري تحميل الخدمات... ✨</p>
+                   <p className="text-gray-500 font-bold animate-pulse">{t("loading_services")}</p>
                </div>
             ) : paginatedServices.length > 0 ? (
               paginatedServices.map((service) => (<div key={service.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group border border-gray-100 flex flex-col">
@@ -321,7 +335,7 @@ export default function Services() {
                       <span className="font-bold text-gradient-primary text-lg">{service.price}</span>
                     </div>
                     <Link href={`/services/${service.id}`} className="bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-gradient-to-br hover:from-blue-900 hover:to-[#8c71af] transition shadow hover:shadow-md transform hover:-translate-y-0.5">
-                      التفاصيل
+                      {t("btn_details")}
                     </Link>
                   </div>
                 </div>
@@ -329,8 +343,8 @@ export default function Services() {
             ) : (
               <div className="col-span-full py-20 text-center">
                 <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">مفيش نتائج مطابقة</h3>
-                <p className="text-gray-500">جربي تغيري فلاتر البحث أو اختاري أقسام تانية.</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">{t("no_results_title")}</h3>
+                <p className="text-gray-500">{t("no_results_desc")}</p>
               </div>
             )}
           </div>

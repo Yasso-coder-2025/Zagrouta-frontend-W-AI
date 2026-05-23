@@ -332,7 +332,7 @@ export default function ServiceDetails() {
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 space-y-8">
               <div>
                 <h3 className="text-xl font-bold text-gray-800 mb-1">آراء العرايس ({reviewsCount})</h3>
-                <p className="text-sm text-gray-500">آراء وتجارب حقيقية من عرايس زغروتة</p>
+                <p className="text-sm text-gray-500">آراء وتجارب حقيقية من عرايس زغروطة</p>
               </div>
               
               {loadingReviews ? (
@@ -471,18 +471,25 @@ export default function ServiceDetails() {
                   />
                 </div>
 
-                <Link href={`/checkout?serviceId=${service.id}&date=${bookingDate}&eventType=${eventType}&guests=${guests}`}>
-                  <button type="button" disabled={!bookingDate} className="mt-4 w-full bg-gradient-primary text-white py-4 rounded-xl font-bold shadow-md hover:opacity-90 hover:shadow-lg transition transform hover:-translate-y-1 flex justify-center items-center gap-2 text-lg disabled:opacity-50 disabled:transform-none">
-                    <span>📅</span> احجز الميعاد
-                  </button>
-                </Link>
+                <div className="flex flex-col gap-3 mt-4">
+                  <Link href={`/checkout?serviceId=${service.id}&date=${bookingDate}&eventType=${eventType}&guests=${guests}`}>
+                    <button 
+                      type="button" 
+                      disabled={!bookingDate} 
+                      className="w-full bg-gradient-primary text-white py-3.5 rounded-xl font-bold shadow-md hover:opacity-95 hover:shadow-lg transition transform hover:-translate-y-0.5 flex justify-center items-center gap-2 text-base disabled:opacity-50 disabled:transform-none cursor-pointer"
+                    >
+                      <span>📅</span> احجز الميعاد
+                    </button>
+                  </Link>
 
-                <button
-                  type="button"
-                  onClick={() => { setIsChatOpen(true); setChatSent(false); }}
-                  className="w-full bg-white border-2 border-border/30 text-[#8c71af] py-3 rounded-xl font-bold hover:bg-[#8c71af]/5 transition flex justify-center items-center gap-2 cursor-pointer">
-                  <span>💬</span> شات مع المورد
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => { setIsChatOpen(true); setChatSent(false); }}
+                    className="w-full bg-white border border-[#8c71af]/40 text-[#8c71af] py-3 rounded-xl font-bold hover:bg-[#8c71af]/5 transition flex justify-center items-center gap-2 cursor-pointer text-sm shadow-sm"
+                  >
+                    <span>💬</span> شات مع المورد
+                  </button>
+                </div>
               </form>
 
               <div className="mt-6 pt-6 border-t text-center">

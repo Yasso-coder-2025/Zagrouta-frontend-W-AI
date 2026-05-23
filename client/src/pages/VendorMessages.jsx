@@ -10,6 +10,7 @@ import {
   Send,
   Search,
   ArrowRight,
+  Star,
 } from "lucide-react";
 import { useAuth } from "../hooks/use-auth";
 import { API_URL } from "../config";
@@ -166,7 +167,7 @@ export default function VendorMessages() {
   const totalUnread = conversations.reduce((sum, c) => sum + (c.unreadCount || 0), 0);
 
   return (
-    <div className="bg-gray-100 flex min-h-screen overflow-hidden w-full" dir="rtl">
+    <div className="bg-gray-100 flex h-screen overflow-hidden w-full" dir="rtl">
       {/* ===== Sidebar ===== */}
       <aside className="w-64 bg-gradient-to-b from-blue-900 via-[#8c71af] to-pink-300 text-white flex-col hidden md:flex h-screen sticky top-0">
         <div className="p-6 text-2xl font-bold border-b border-white/20 text-center">
@@ -190,6 +191,9 @@ export default function VendorMessages() {
               </span>
             )}
           </Link>
+          <Link href="/vendor-reviews" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
+            <Star size={20} /> آراء العملاء
+          </Link>
           <Link href="/vendor-settings" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
             <Settings size={20} /> الإعدادات
           </Link>
@@ -202,7 +206,7 @@ export default function VendorMessages() {
       </aside>
 
       {/* ===== Main Content ===== */}
-      <main className="flex-1 flex flex-col overflow-hidden min-h-screen">
+      <main className="flex-1 flex flex-col overflow-hidden h-full">
         <VendorHeader
           title={isMobileChat && selectedConv ? selectedConv.name : "الرسائل 💬"}
           extraContent={
@@ -401,6 +405,9 @@ export default function VendorMessages() {
               {totalUnread}
             </span>
           )}
+        </Link>
+        <Link href="/vendor-reviews" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
+          <Star size={20} />
         </Link>
         <button onClick={handleLogout} className="flex flex-col items-center p-2 text-white/70 hover:text-red-300 transition cursor-pointer">
           <LogOut size={20} />

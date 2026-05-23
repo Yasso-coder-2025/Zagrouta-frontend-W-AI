@@ -50,9 +50,21 @@ export default function Footer() {
               تواصل معنا
             </h4>
             <ul className="space-y-2 text-gray-400">
-              <li>📞 19xxx - الخط الساخن</li>
-              <li>📧 hello@zagrouta.com</li>
-              <li>📍 القاهرة، مصر</li>
+              <li>
+                <a href="#" className="hover:text-primary transition flex items-center gap-2">
+                  <span>📞</span> 19xxx - الخط الساخن
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-primary transition flex items-center gap-2">
+                  <span>📧</span> hello@zagrouta.com
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-primary transition flex items-center gap-2">
+                  <span>📍</span> القاهرة، مصر
+                </a>
+              </li>
             </ul>
           </div>
         </div>

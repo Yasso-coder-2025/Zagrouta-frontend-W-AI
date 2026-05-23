@@ -259,7 +259,7 @@ export default function Auth() {
                       onClick={() => setShowLoginPassword(!showLoginPassword)}
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer flex items-center"
                     >
-                      {showLoginPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      {showLoginPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                     </button>
                   </div>
                 </div>
@@ -305,7 +305,7 @@ export default function Auth() {
                       onClick={() => setShowNewPassword(!showNewPassword)}
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer flex items-center"
                     >
-                      {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      {showNewPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                     </button>
                   </div>
                 </div>
@@ -325,7 +325,7 @@ export default function Auth() {
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer flex items-center"
                     >
-                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                     </button>
                   </div>
                 </div>
@@ -427,7 +427,7 @@ export default function Auth() {
                       onClick={() => setShowSignupPassword(!showSignupPassword)}
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer flex items-center"
                     >
-                      {showSignupPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      {showSignupPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                     </button>
                   </div>
                 </div>

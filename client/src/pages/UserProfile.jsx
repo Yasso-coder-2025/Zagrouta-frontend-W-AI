@@ -16,6 +16,8 @@ import {
   MessageSquare,
   Send,
   Search,
+  Wallet,
+  Plus,
 } from "lucide-react";
 import { useAuth } from "../hooks/use-auth";
 import { CustomSelect } from "../components/ui/CustomSelect";
@@ -23,6 +25,14 @@ import { API_URL } from "../config";
 import { useFavorites } from "../hooks/use-favorites";
 import { useToast } from "@/hooks/use-toast";
 import { SERVICES_DATA } from "../lib/data";
+
+const DEFAULT_CHECKLIST = [
+  { id: "planner", title: "تحديد ميزانية الفرح وموعده التقريبي", category: "planner", desc: "ابدئي بتحديد ميزانيتك الكلية وموعد الزفاف لترتيب باقي الخطوات.", link: "/planner", icon: "💍" },
+  { id: "venue", title: "حجز قاعة الأفراح المناسبة", category: "venue", desc: "اختاري القاعة أو الفيلا المفتوحة المناسبة لعدد الضيوف وميزانيتك.", link: "/services?category=venue", icon: "🏨" },
+  { id: "dress", title: "اختيار فستان الزفاف", category: "dress", desc: "تصفحي الأتيليهات لتجربة فستان أحلامك مبكراً.", link: "/services?category=dress", icon: "👗" },
+  { id: "makeup", title: "حجز الميك أب آرتيست", category: "makeup", desc: "احجزي خبيرة التجميل المفضلة لضمان توفرها في يومك المميز.", link: "/services?category=makeup", icon: "💄" },
+  { id: "photography", title: "الاتفاق مع مصور محترف", category: "photography", desc: "احجزي جلسة تصوير لتسجيل لحظات فرحتك العمرية.", link: "/services?category=photography", icon: "📸" },
+];
 
 export default function UserProfile() {
   const { user, login, logout } = useAuth();
@@ -32,10 +42,101 @@ export default function UserProfile() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("bookings");
 
+  const [completedTasks, setCompletedTasks] = useState(() => {
+    try {
+      const stored = localStorage.getItem("zaghrouta_checklist_completed");
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
+
+  const toggleTask = (taskId) => {
+    setCompletedTasks((prev) => {
+      const next = new Set(prev);
+      if (next.has(taskId)) {
+        next.delete(taskId);
+      } else {
+        next.add(taskId);
+      }
+      try {
+        localStorage.setItem("zaghrouta_checklist_completed", JSON.stringify([...next]));
+      } catch {}
+      return next;
+    });
+  };
+
+  const [organizerTab, setOrganizerTab] = useState("checklist");
+  const [totalBudget, setTotalBudget] = useState(() => {
+    try {
+      const stored = localStorage.getItem("zaghrouta_total_budget");
+      return stored ? parseInt(stored, 10) : 80000;
+    } catch { return 80000; }
+  });
+  const [isEditingBudget, setIsEditingBudget] = useState(false);
+  const [budgetInput, setBudgetInput] = useState(totalBudget.toString());
+
+  const [customExpenses, setCustomExpenses] = useState(() => {
+    try {
+      const stored = localStorage.getItem("zaghrouta_custom_expenses");
+      return stored ? JSON.parse(stored) : [];
+    } catch { return []; }
+  });
+
+  const [newExpenseName, setNewExpenseName] = useState("");
+  const [newExpenseAmount, setNewExpenseAmount] = useState("");
+
+  const handleAddExpense = (e) => {
+    e.preventDefault();
+    if (!newExpenseName.trim() || !newExpenseAmount.trim()) return;
+    const amount = parseInt(newExpenseAmount, 10);
+    if (isNaN(amount)) return;
+
+    const newExpense = {
+      id: Date.now().toString(),
+      name: newExpenseName.trim(),
+      amount
+    };
+
+    setCustomExpenses((prev) => {
+      const next = [...prev, newExpense];
+      try {
+        localStorage.setItem("zaghrouta_custom_expenses", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+
+    setNewExpenseName("");
+    setNewExpenseAmount("");
+  };
+
+  const handleRemoveExpense = (id) => {
+    setCustomExpenses((prev) => {
+      const next = prev.filter((exp) => exp.id !== id);
+      try {
+        localStorage.setItem("zaghrouta_custom_expenses", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  const handleSaveBudget = (e) => {
+    e.preventDefault();
+    const val = parseInt(budgetInput, 10);
+    if (isNaN(val) || val <= 0) return;
+    setTotalBudget(val);
+    try {
+      localStorage.setItem("zaghrouta_total_budget", val.toString());
+    } catch {}
+    setIsEditingBudget(false);
+  };
+
   // افتح التاب الصح لو في URL ?tab=
   useEffect(() => {
     const params = new URLSearchParams(search);
-    const tab = params.get("tab");
+    let tab = params.get("tab");
+    if (tab === "checklist" || tab === "budget") {
+      setOrganizerTab(tab);
+      tab = "organizer";
+    }
     if (tab) setActiveTab(tab);
   }, [search]);
   const [bookings, setBookings] = useState([]);
@@ -401,6 +502,14 @@ export default function UserProfile() {
                 >
                   <Camera size={20} /> حجوزاتي
                 </button>
+                {user?.role === "CUSTOMER" && (
+                  <button
+                    onClick={() => switchTab("organizer")}
+                    className={`w-full p-3 rounded-xl font-bold flex items-center gap-3 transition ${activeTab === "organizer" ? "bg-gradient-to-br from-blue-50 to-pink-50 text-[#8c71af] border border-border/20" : "text-gray-600 hover:bg-gray-50"}`}
+                  >
+                    <CheckCircle size={20} /> منظم الفرح
+                  </button>
+                )}
                 <button
                   onClick={() => switchTab("favorites")}
                   className={`w-full p-3 rounded-xl font-bold flex items-center gap-3 transition ${activeTab === "favorites" ? "bg-gradient-to-br from-blue-50 to-pink-50 text-[#8c71af] border border-border/20" : "text-gray-600 hover:bg-gray-50"}`}
@@ -651,6 +760,353 @@ export default function UserProfile() {
               </section>
             )}
 
+            {/* Wedding Organizer Hub */}
+            {activeTab === "organizer" && user?.role === "CUSTOMER" && (() => {
+              const confirmedBookings = bookings.filter(b => b.status === "CONFIRMED");
+              const bookingsSpent = confirmedBookings.reduce((sum, b) => {
+                const priceNum = parseInt((b.servicePrice || "").replace(/[^\d]/g, ""), 10);
+                return sum + (isNaN(priceNum) ? 0 : priceNum);
+              }, 0);
+
+              const customSpent = customExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+              const totalSpent = bookingsSpent + customSpent;
+              const remainingBudget = totalBudget - totalSpent;
+
+              const getCategorySpending = () => {
+                const categories = {
+                  venue: { name: "القاعة والفيلا 🏨", spent: 0, limitPercent: 50 },
+                  dress: { name: "فستان الزفاف 👗", spent: 0, limitPercent: 20 },
+                  makeup: { name: "الميك أب آرتيست 💄", spent: 0, limitPercent: 15 },
+                  photography: { name: "التصوير والفيديو 📸", spent: 0, limitPercent: 15 },
+                };
+
+                confirmedBookings.forEach((b) => {
+                  const service = SERVICES_DATA.find((s) => s.id === b.serviceId);
+                  const category = service?.category;
+                  if (category && categories[category]) {
+                    const priceNum = parseInt((b.servicePrice || "").replace(/[^\d]/g, ""), 10);
+                    if (!isNaN(priceNum)) {
+                      categories[category].spent += priceNum;
+                    }
+                  }
+                });
+
+                return Object.keys(categories).map((key) => ({
+                  key,
+                  ...categories[key],
+                  allocated: (totalBudget * categories[key].limitPercent) / 100,
+                }));
+              };
+
+              const categorySpending = getCategorySpending();
+
+              return (
+                <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 text-right" dir="rtl">
+                  
+                  {/* Hub Header & Subtabs */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-100 pb-4">
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-800">منظم زفاف زغروطة 💍</h2>
+                      <p className="text-gray-400 text-xs mt-1">خططي لفرحك، تتبعي المهام، واديري ميزانيتك بكل سهولة.</p>
+                    </div>
+                    
+                    {/* Subtabs Buttons */}
+                    <div className="bg-gray-100 p-1 rounded-xl flex gap-1 w-full sm:w-auto shadow-inner">
+                      <button
+                        onClick={() => setOrganizerTab("checklist")}
+                        type="button"
+                        className={`flex-1 sm:flex-initial px-6 py-2.5 rounded-lg text-sm font-bold transition cursor-pointer ${
+                          organizerTab === "checklist" 
+                            ? "bg-white text-[#8c71af] shadow-sm" 
+                            : "text-gray-500 hover:text-gray-800 bg-transparent"
+                        }`}
+                      >
+                        📋 قائمة المهام
+                      </button>
+                      <button
+                        onClick={() => setOrganizerTab("budget")}
+                        type="button"
+                        className={`flex-1 sm:flex-initial px-6 py-2.5 rounded-lg text-sm font-bold transition cursor-pointer ${
+                          organizerTab === "budget" 
+                            ? "bg-white text-[#8c71af] shadow-sm" 
+                            : "text-gray-500 hover:text-gray-800 bg-transparent"
+                        }`}
+                      >
+                        💰 حاسبة الميزانية
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* RENDER CHECKLIST TAB */}
+                  {organizerTab === "checklist" && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                      {/* Progress Card */}
+                      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+                        <div className="flex justify-between text-sm font-bold text-gray-700">
+                          <span>نسبة التجهيز وفرحة العمر:</span>
+                          <span className="text-gradient-primary">
+                            {Math.round((completedTasks.size / DEFAULT_CHECKLIST.length) * 100)}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-gradient-primary h-full transition-all duration-500 ease-in-out" 
+                            style={{ width: `${(completedTasks.size / DEFAULT_CHECKLIST.length) * 100}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-400 font-bold">
+                          {completedTasks.size === DEFAULT_CHECKLIST.length 
+                            ? "مبروك! جهزتي كل أساسيات فرحك، ربنا يتمملك على خير يا عروسة زغروطة! 🎉❤️" 
+                            : "خطوة بخطوة وكل حاجة هترتب مع زغروطة.. كملي باقي المهام ✨"}
+                        </p>
+                      </div>
+
+                      {/* Checklist items */}
+                      <div className="space-y-4">
+                        {DEFAULT_CHECKLIST.map((item) => {
+                          const isCompleted = completedTasks.has(item.id);
+                          return (
+                            <div 
+                              key={item.id} 
+                              className={`bg-white p-5 rounded-2xl shadow-sm border transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${
+                                isCompleted ? "border-purple-300 bg-purple-50/20" : "border-gray-100 hover:shadow-md"
+                              }`}
+                            >
+                              <div className="flex items-start gap-4">
+                                <div className="text-3xl p-2 bg-gray-50 rounded-xl flex-shrink-0">
+                                  {item.icon}
+                                </div>
+                                <div>
+                                  <h4 className={`font-bold text-base ${isCompleted ? "text-gray-300 line-through" : "text-gray-800"}`}>
+                                    {item.title}
+                                  </h4>
+                                  <p className={`text-xs mt-1 ${isCompleted ? "text-gray-300" : "text-gray-500"}`}>
+                                    {item.desc}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                                <Link href={item.link}>
+                                  <span className="text-xs font-bold text-[#8c71af] hover:text-pink-500 hover:underline transition flex items-center gap-1 cursor-pointer">
+                                    {item.id === "planner" ? "ابدئي التخطيط 💍" : "استكشفي الخدمات 👈"}
+                                  </span>
+                                </Link>
+
+                                {/* Checkbox button */}
+                                <button
+                                  onClick={() => toggleTask(item.id)}
+                                  type="button"
+                                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition cursor-pointer ${
+                                    isCompleted 
+                                      ? "bg-[#8c71af] border-[#8c71af] text-white" 
+                                      : "border-gray-200 hover:border-[#8c71af] text-transparent"
+                                  }`}
+                                >
+                                  ✓
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* RENDER BUDGET TAB */}
+                  {organizerTab === "budget" && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                      
+                      {/* Budget Overview Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Total Budget Card */}
+                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                          <span className="text-xs font-bold text-gray-500">الميزانية الكلية 💰</span>
+                          {isEditingBudget ? (
+                            <form onSubmit={handleSaveBudget} className="flex gap-2 mt-2">
+                              <input
+                                type="number"
+                                value={budgetInput}
+                                onChange={(e) => setBudgetInput(e.target.value)}
+                                className="w-full p-2 border border-gray-200 rounded-xl text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-[#8c71af]"
+                                autoFocus
+                              />
+                              <button type="submit" className="bg-[#8c71af] text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm cursor-pointer border-none outline-none">حفظ</button>
+                            </form>
+                          ) : (
+                            <div className="flex justify-between items-center mt-2">
+                              <span className="text-2xl font-black text-[#8c71af]">{totalBudget.toLocaleString()} ج.م</span>
+                              <button 
+                                onClick={() => { setBudgetInput(totalBudget.toString()); setIsEditingBudget(true); }}
+                                type="button"
+                                className="text-xs font-bold text-gray-400 hover:text-[#8c71af] underline cursor-pointer bg-transparent border-none outline-none"
+                              >
+                                تعديل
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Total Spent Card */}
+                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                          <span className="text-xs font-bold text-gray-500">المصاريف الفعلية 💸</span>
+                          <span className="text-2xl font-black text-orange-500 mt-2">{totalSpent.toLocaleString()} ج.م</span>
+                        </div>
+
+                        {/* Remaining Budget Card */}
+                        <div className={`bg-white p-5 rounded-2xl shadow-sm border flex flex-col justify-between ${
+                          remainingBudget < 0 ? "border-red-200 bg-red-50/20" : "border-gray-100"
+                        }`}>
+                          <span className="text-xs font-bold text-gray-500">الميزانية المتبقية ⚖️</span>
+                          <span className={`text-2xl font-black mt-2 ${remainingBudget < 0 ? "text-red-500 animate-pulse" : "text-green-600"}`}>
+                            {remainingBudget.toLocaleString()} ج.م
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Budget Warning Alert */}
+                      {remainingBudget < 0 && (
+                        <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 text-xs font-bold flex gap-2 items-center">
+                          <span>⚠️</span>
+                          <span>تنبيه: لقد تخطيت الميزانية الكلية المحددة! حاولي تقليل المصاريف الجانبية.</span>
+                        </div>
+                      )}
+
+                      {/* Progress Slider */}
+                      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+                        <div className="flex justify-between text-xs font-bold text-gray-500">
+                          <span>النسبة المستهلكة من الميزانية:</span>
+                          <span>{Math.min(100, Math.round((totalSpent / totalBudget) * 100))}%</span>
+                        </div>
+                        <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full transition-all duration-500 ${totalSpent > totalBudget ? "bg-red-500" : "bg-orange-500"}`} 
+                            style={{ width: `${Math.min(100, (totalSpent / totalBudget) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Allocation Categories */}
+                      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                        <h3 className="font-bold text-gray-800 text-sm border-b pb-3 mb-2">توزيع الميزانية المقترح والمستهلك 📊</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {categorySpending.map((cat) => {
+                            const percentSpent = cat.allocated > 0 ? Math.round((cat.spent / cat.allocated) * 100) : 0;
+                            return (
+                              <div key={cat.key} className="space-y-2">
+                                <div className="flex justify-between text-xs font-bold">
+                                  <span className="text-gray-700">{cat.name}</span>
+                                  <span className="text-gray-400">
+                                    {cat.spent.toLocaleString()} / {cat.allocated.toLocaleString()} ج.م
+                                  </span>
+                                </div>
+                                <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                  <div 
+                                    className={`h-full rounded-full transition-all duration-500 ${cat.spent > cat.allocated ? "bg-red-500" : "bg-[#8c71af]"}`} 
+                                    style={{ width: `${Math.min(100, percentSpent)}%` }}
+                                  />
+                                </div>
+                                <div className="flex justify-between text-[10px] text-gray-400 font-bold">
+                                  <span>النسبة المخصصة: {cat.limitPercent}%</span>
+                                  <span className={cat.spent > cat.allocated ? "text-red-500" : "text-gray-400"}>
+                                    {percentSpent}% مستهلك
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        {/* Left: Custom Expenses Management */}
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                          <div>
+                            <h3 className="font-bold text-gray-800 text-sm border-b pb-3 mb-4">إضافة مصاريف أخرى (خارج الموقع) 📝</h3>
+                            
+                            {/* Form */}
+                            <form onSubmit={handleAddExpense} className="flex gap-2 mb-4">
+                              <input
+                                required
+                                type="text"
+                                placeholder="اسم المصروف (مثال: الورد)"
+                                value={newExpenseName}
+                                onChange={e => setNewExpenseName(e.target.value)}
+                                className="flex-1 p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#8c71af]"
+                              />
+                              <input
+                                required
+                                type="number"
+                                placeholder="المبلغ (جنيه)"
+                                value={newExpenseAmount}
+                                onChange={e => setNewExpenseAmount(e.target.value)}
+                                className="w-24 p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#8c71af]"
+                              />
+                              <button
+                                type="submit"
+                                className="bg-gradient-primary text-white p-2 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer shadow-sm border-none"
+                              >
+                                <Plus size={16} />
+                              </button>
+                            </form>
+
+                            {/* List of Custom Expenses */}
+                            <div className="space-y-2 max-h-48 overflow-y-auto pl-1">
+                              {customExpenses.length === 0 ? (
+                                <p className="text-xs text-gray-400 text-center py-6 font-bold">لا توجد مصاريف مخصصة مضافة حالياً.</p>
+                              ) : (
+                                customExpenses.map((exp) => (
+                                  <div key={exp.id} className="flex justify-between items-center p-2.5 bg-gray-50 rounded-xl border border-gray-100 text-xs">
+                                    <span className="font-bold text-gray-700">{exp.name}</span>
+                                    <div className="flex items-center gap-3">
+                                      <span className="font-black text-orange-500">{exp.amount.toLocaleString()} ج.م</span>
+                                      <button
+                                        onClick={() => handleRemoveExpense(exp.id)}
+                                        type="button"
+                                        className="text-gray-400 hover:text-red-500 cursor-pointer font-bold bg-transparent border-none outline-none"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right: Confirmed bookings lists */}
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                          <div>
+                            <h3 className="font-bold text-gray-800 text-sm border-b pb-3 mb-4">تفاصيل الحجوزات المدفوعة (داخل الموقع) 💳</h3>
+                            <div className="space-y-2 max-h-60 overflow-y-auto pl-1">
+                              {confirmedBookings.length === 0 ? (
+                                <p className="text-xs text-gray-400 text-center py-6 font-bold">لا توجد حجوزات مؤكدة لجمع تكاليفها بعد.</p>
+                              ) : (
+                                confirmedBookings.map((booking) => (
+                                  <div key={booking.id} className="p-3 bg-gray-50 rounded-xl border border-gray-100 flex justify-between items-center text-xs">
+                                    <div>
+                                      <h5 className="font-bold text-gray-800">{booking.serviceName}</h5>
+                                      <p className="text-[10px] text-gray-400 mt-0.5">{booking.vendorName}</p>
+                                    </div>
+                                    <span className="font-black text-gradient-primary">{booking.servicePrice}</span>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+                    </div>
+                  )}
+
+                </section>
+              );
+            })()}
+
             {/* Settings Section */}
             {activeTab === "settings" && (
               <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
@@ -751,6 +1207,17 @@ export default function UserProfile() {
                       </button>
                     </div>
                   </form>
+                  {/* Mobile-only Logout button inside settings for customer */}
+                  {user?.role === "CUSTOMER" && (
+                    <div className="mt-8 pt-6 border-t border-gray-100 md:hidden">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full py-3 bg-red-50 text-red-500 rounded-xl font-bold border border-red-100 hover:bg-red-100 transition flex items-center justify-center gap-2 cursor-pointer bg-transparent border-none"
+                      >
+                        <LogOut size={18} /> تسجيل الخروج
+                      </button>
+                    </div>
+                  )}
                 </div>
               </section>
             )}
@@ -913,6 +1380,15 @@ export default function UserProfile() {
           <Calendar size={22} />
           <span className="text-[10px] font-bold">حجوزاتي</span>
         </button>
+        {user?.role === "CUSTOMER" && (
+          <button
+            onClick={() => switchTab("organizer")}
+            className={`flex flex-col items-center gap-1 p-2 transition ${activeTab === "organizer" ? "text-[#8c71af]" : "text-gray-400 hover:text-[#8c71af]"}`}
+          >
+            <CheckCircle size={22} />
+            <span className="text-[10px] font-bold">المنظم</span>
+          </button>
+        )}
         <button
           onClick={() => switchTab("favorites")}
           className={`flex flex-col items-center gap-1 p-2 transition ${activeTab === "favorites" ? "text-[#8c71af]" : "text-gray-400 hover:text-[#8c71af]"}`}
@@ -939,13 +1415,15 @@ export default function UserProfile() {
           <Settings size={22} />
           <span className="text-[10px] font-bold">إعدادات</span>
         </button>
-        <button
-          onClick={handleLogout}
-          className="flex flex-col items-center gap-1 text-gray-400 hover:text-red-600 p-2 transition cursor-pointer bg-transparent border-none"
-        >
-          <LogOut size={22} />
-          <span className="text-[10px] font-bold">خروج</span>
-        </button>
+        {user?.role !== "CUSTOMER" && (
+          <button
+            onClick={handleLogout}
+            className="flex flex-col items-center gap-1 text-gray-400 hover:text-red-600 p-2 transition cursor-pointer bg-transparent border-none"
+          >
+            <LogOut size={22} />
+            <span className="text-[10px] font-bold">خروج</span>
+          </button>
+        )}
       </div>
     </div>
   );

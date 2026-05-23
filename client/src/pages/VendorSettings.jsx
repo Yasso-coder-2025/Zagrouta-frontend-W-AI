@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { 
-    LayoutDashboard, Scissors, CalendarCheck, MessageSquare, Settings, LogOut,
+    LayoutDashboard, Scissors, CalendarCheck, MessageSquare, Settings, LogOut, Star,
     User, Briefcase, Share2, Camera, Instagram, Facebook, MapPin, Mail, FileText, Lock 
 } from "lucide-react";
 import { useAuth } from "../hooks/use-auth";
@@ -118,7 +118,7 @@ export default function VendorSettings() {
     ];
 
     return (
-        <div className="bg-gray-100 flex min-h-screen overflow-hidden w-full" dir="rtl">
+        <div className="bg-gray-100 flex h-screen overflow-hidden w-full" dir="rtl">
             {/* Sidebar */}
             <aside className="w-64 bg-gradient-to-b from-blue-900 via-[#8c71af] to-pink-300 text-white flex-col hidden md:flex h-screen sticky top-0">
                 <div className="p-6 text-2xl font-bold border-b border-white/20 text-center">
@@ -142,6 +142,9 @@ export default function VendorSettings() {
                             </span>
                         )}
                     </Link>
+                    <Link href="/vendor-reviews" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
+                        <Star size={20} /> آراء العملاء
+                    </Link>
                     <Link href="/vendor-settings" className="block p-3 rounded-xl bg-white/20 font-bold flex items-center gap-3 shadow-sm border border-white/10">
                         <Settings size={20} /> الإعدادات
                     </Link>
@@ -154,7 +157,7 @@ export default function VendorSettings() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col overflow-y-auto w-full min-h-screen pb-12 md:pb-0">
+            <main className="flex-1 flex flex-col overflow-y-auto w-full h-full pb-12 md:pb-0">
                 <VendorHeader onUnreadMessages={setUnreadMessages} title="الإعدادات ⚙️" />
 
                 <div className="p-4 md:p-8 max-w-3xl mx-auto w-full">
@@ -427,6 +430,9 @@ export default function VendorSettings() {
                 </Link>
                 <Link href="/vendor-messages" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
                     <MessageSquare size={20} />
+                </Link>
+                <Link href="/vendor-reviews" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
+                    <Star size={20} />
                 </Link>
                 <Link href="/vendor-settings" className="flex flex-col items-center p-2 text-white bg-white/20 rounded-lg">
                     <Settings size={20} />

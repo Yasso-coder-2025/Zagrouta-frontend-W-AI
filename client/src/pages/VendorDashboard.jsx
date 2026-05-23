@@ -9,15 +9,35 @@ export default function VendorDashboard() {
     const { user, logout } = useAuth();
     const [, setLocation] = useLocation();
     const [bookings, setBookings] = useState([]);
+    const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedBooking, setSelectedBooking] = useState(null);
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [unreadMessages, setUnreadMessages] = useState(0);
 
     useEffect(() => {
         if (user && user.role === 'VENDOR') {
             fetchBookings();
+            fetchReviews();
         }
     }, [user]);
+
+    const fetchReviews = async () => {
+        try {
+            const res = await fetch(`${API_URL}/reviews/vendor/${user.id}`);
+            if (res.ok) {
+                const data = await res.json();
+                setReviews(data);
+            }
+        } catch (error) {
+            console.error("Error fetching vendor reviews:", error);
+        }
+    };
+
+    const totalReviews = reviews.length;
+    const averageRating = totalReviews > 0 
+        ? (reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1)
+        : "5.0";
 
     const fetchBookings = async () => {
         try {
@@ -61,7 +81,7 @@ export default function VendorDashboard() {
         setLocation("/auth");
     };
 
-    return (<div className="bg-gray-100 flex min-h-screen overflow-hidden w-full">
+    return (<div className="bg-gray-100 flex h-screen overflow-hidden w-full">
       {/* Sidebar */}
       <aside className="w-64 bg-gradient-to-b from-blue-900 via-[#8c71af] to-pink-300 text-white flex-col hidden md:flex h-screen sticky top-0">
         <div className="p-6 text-2xl font-bold border-b border-white/20 text-center">
@@ -83,6 +103,9 @@ export default function VendorDashboard() {
               <span className="mr-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1">{unreadMessages}</span>
             )}
           </Link>
+          <Link href="/vendor-reviews" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
+            <Star size={20}/> آراء العملاء
+          </Link>
           <Link href="/vendor-settings" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
             <Settings size={20}/> الإعدادات
           </Link>
@@ -95,7 +118,7 @@ export default function VendorDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-y-auto w-full min-h-screen pb-12 md:pb-0">
+      <main className="flex-1 flex flex-col overflow-y-auto w-full h-full pb-12 md:pb-0">
         <VendorHeader onUnreadMessages={setUnreadMessages} />
 
         <div className="p-4 md:p-8 space-y-8">
@@ -118,72 +141,121 @@ export default function VendorDashboard() {
               <p className="text-gray-500 text-sm">طلبات معلقة</p>
               <p className="text-3xl font-bold mt-2">{bookings.filter(b => b.status === 'PENDING').length}</p>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border-r-4 ">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border-r-4 border-yellow-500">
               <p className="text-gray-500 text-sm">تقييم المورد</p>
               <div className="flex items-center gap-2 mt-2">
                 <Star className="text-yellow-400 fill-yellow-400" size={28} />
-                <p className="text-3xl font-bold text-gradient-primary">4.9</p>
+                <div>
+                  <p className="text-3xl font-bold text-gradient-primary">{averageRating}</p>
+                  <p className="text-[10px] text-gray-400 font-bold">{totalReviews} تقييم</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Recent Orders */}
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
-            <div className="p-6 border-b flex justify-between items-center">
-              <h3 className="font-bold text-lg text-gray-800">أحدث طلبات الحجز</h3>
-              <button className="text-[#8c71af] text-sm hover:underline font-semibold transition">عرض الكل</button>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-right border-collapse min-w-[600px]">
-                <thead className="bg-gray-50 text-gray-500 text-sm">
-                  <tr>
-                    <th className="p-4">اسم العروسة</th>
-                    <th className="p-4">الخدمة</th>
-                    <th className="p-4">التاريخ</th>
-                    <th className="p-4">الحالة</th>
-                    <th className="p-4">الإجراء</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 text-sm">
-                  {loading ? (
+          {/* Two Column Layout: Recent Orders & Customer Comments */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Right Side: Recent Bookings Table (65%) */}
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 lg:col-span-2">
+              <div className="p-6 border-b flex justify-between items-center">
+                <h3 className="font-bold text-lg text-gray-800">أحدث طلبات الحجز</h3>
+                <Link href="/vendor-bookings" className="text-[#8c71af] text-sm hover:underline font-semibold transition">عرض الكل</Link>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-right border-collapse min-w-[500px]">
+                  <thead className="bg-gray-50 text-gray-500 text-sm">
                     <tr>
-                      <td colSpan="5" className="p-8 text-center text-gray-500 font-bold">جاري تحميل الطلبات...</td>
+                      <th className="p-4">اسم العروسة</th>
+                      <th className="p-4">الخدمة</th>
+                      <th className="p-4">التاريخ</th>
+                      <th className="p-4">الحالة</th>
+                      <th className="p-4">الإجراء</th>
                     </tr>
-                  ) : bookings.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" className="p-8 text-center text-gray-500 font-bold">لا توجد طلبات حجز حالياً</td>
-                    </tr>
-                  ) : (
-                    bookings.map(booking => (
-                      <tr key={booking.id} className="hover:bg-gray-50">
-                        <td className="p-4 font-semibold">{booking.customer?.fullName || 'عميل'}</td>
-                        <td className="p-4 text-gray-600">{booking.serviceName}</td>
-                        <td className="p-4 text-gray-600">{booking.bookingDate}</td>
-                        <td className="p-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                            booking.status === 'CONFIRMED' ? 'bg-green-100 text-green-700' :
-                            booking.status === 'CANCELLED' || booking.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
-                            'bg-yellow-100 text-yellow-700'
-                          }`}>
-                            {booking.status === 'CONFIRMED' ? 'مؤكد' : booking.status === 'CANCELLED' ? 'ملغي من العميل' : booking.status === 'REJECTED' ? 'مرفوض' : 'قيد الانتظار'}
-                          </span>
-                        </td>
-                        <td className="p-4">
-                          {booking.status === 'PENDING' ? (
-                            <>
-                              <button onClick={() => handleUpdateStatus(booking.id, 'CONFIRMED')} className="text-green-600 hover:font-bold ml-2 cursor-pointer">قبول</button> / 
-                              <button onClick={() => handleUpdateStatus(booking.id, 'REJECTED')} className="text-red-600 hover:font-bold mr-2 cursor-pointer">رفض</button>
-                            </>
-                          ) : (
-                            <button onClick={() => { setSelectedBooking(booking); setIsDetailsModalOpen(true); }} className="text-blue-600 hover:underline cursor-pointer">عرض التفاصيل</button>
-                          )}
-                        </td>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 text-sm">
+                    {loading ? (
+                      <tr>
+                        <td colSpan="5" className="p-8 text-center text-gray-500 font-bold">جاري تحميل الطلبات...</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : bookings.length === 0 ? (
+                      <tr>
+                        <td colSpan="5" className="p-8 text-center text-gray-500 font-bold">لا توجد طلبات حجز حالياً</td>
+                      </tr>
+                    ) : (
+                      bookings.slice(0, 5).map(booking => (
+                        <tr key={booking.id} className="hover:bg-gray-50">
+                          <td className="p-4 font-semibold">{booking.customer?.fullName || 'عميل'}</td>
+                          <td className="p-4 text-gray-600">{booking.serviceName}</td>
+                          <td className="p-4 text-gray-600">{booking.bookingDate}</td>
+                          <td className="p-4">
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                              booking.status === 'CONFIRMED' ? 'bg-green-100 text-green-700' :
+                              booking.status === 'CANCELLED' || booking.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
+                              'bg-yellow-100 text-yellow-700'
+                            }`}>
+                              {booking.status === 'CONFIRMED' ? 'مؤكد' : booking.status === 'CANCELLED' ? 'ملغي من العميل' : booking.status === 'REJECTED' ? 'مرفوض' : 'قيد الانتظار'}
+                            </span>
+                          </td>
+                          <td className="p-4">
+                            {booking.status === 'PENDING' ? (
+                              <>
+                                <button onClick={() => handleUpdateStatus(booking.id, 'CONFIRMED')} className="text-green-600 hover:font-bold ml-2 cursor-pointer">قبول</button> / 
+                                <button onClick={() => handleUpdateStatus(booking.id, 'REJECTED')} className="text-red-600 hover:font-bold mr-2 cursor-pointer">رفض</button>
+                              </>
+                            ) : (
+                              <button onClick={() => { setSelectedBooking(booking); setIsDetailsModalOpen(true); }} className="text-blue-600 hover:underline cursor-pointer">عرض التفاصيل</button>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
+
+            {/* Left Side: Recent Reviews Widget (35%) */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between overflow-hidden">
+              <div className="p-6 border-b flex justify-between items-center bg-gray-50/50">
+                <h3 className="font-bold text-lg text-gray-800">آخر آراء وتقييمات العرايس 💬</h3>
+              </div>
+              
+              <div className="p-6 flex-1 space-y-4 max-h-[400px] overflow-y-auto">
+                {loading ? (
+                  <div className="text-center py-10 text-gray-400 font-bold text-sm">جاري تحميل الآراء...</div>
+                ) : reviews.length === 0 ? (
+                  <div className="text-center py-10 text-gray-400">
+                    <p className="font-bold text-sm">لا توجد تعليقات حتى الآن</p>
+                    <p className="text-xs mt-1">التقييمات الجديدة هتظهر هنا.</p>
+                  </div>
+                ) : (
+                  reviews.slice(0, 3).map(review => (
+                    <div key={review.id} className="p-3.5 bg-gray-50 rounded-xl space-y-2 border border-gray-100 hover:border-[#8c71af]/30 transition duration-300">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-gray-700 text-xs">{review.user?.fullName}</span>
+                        <div className="flex text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={i < review.rating ? "fill-current" : "text-gray-200"} size={12} />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500 font-semibold truncate">🏷️ {review.service?.name}</p>
+                      <p className="text-xs text-gray-600 font-medium leading-relaxed line-clamp-2">
+                        {review.comment}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="p-4 bg-gray-50/50 border-t border-gray-100 text-center">
+                <Link href="/vendor-reviews" className="inline-block bg-gradient-primary text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-md hover:opacity-90 transition">
+                  عرض جميع الآراء
+                </Link>
+              </div>
+            </div>
+
           </div>
         </div>
       </main>
@@ -252,9 +324,12 @@ export default function VendorDashboard() {
         <Link href="/vendor-bookings" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
           <CalendarCheck size={20}/>
         </Link>
-        <a href="#" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
+        <Link href="/vendor-messages" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
           <MessageSquare size={20}/>
-        </a>
+        </Link>
+        <Link href="/vendor-reviews" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
+          <Star size={20}/>
+        </Link>
         <button onClick={handleLogout} className="flex flex-col items-center p-2 text-white/70 hover:text-red-300 transition cursor-pointer">
           <LogOut size={20}/>
         </button>

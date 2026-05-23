@@ -19,10 +19,11 @@ import VendorServices from "@/pages/VendorServices";
 import VendorBookings from "@/pages/VendorBookings";
 import VendorMessages from "@/pages/VendorMessages";
 import VendorSettings from "@/pages/VendorSettings";
+import VendorReviews from "@/pages/VendorReviews";
 import Contact from "@/pages/Contact";
 function Router() {
     const [location] = useLocation();
-    const isVendorDashboard = location.startsWith("/vendor-dashboard") || location.startsWith("/vendor-services") || location.startsWith("/vendor-bookings") || location.startsWith("/vendor-messages") || location.startsWith("/vendor-settings");
+    const isVendorDashboard = location.startsWith("/vendor-dashboard") || location.startsWith("/vendor-services") || location.startsWith("/vendor-bookings") || location.startsWith("/vendor-messages") || location.startsWith("/vendor-settings") || location.startsWith("/vendor-reviews");
     if (isVendorDashboard) {
         return (<Switch>
         <Route path="/vendor-dashboard" component={VendorDashboard}/>
@@ -30,6 +31,7 @@ function Router() {
         <Route path="/vendor-bookings" component={VendorBookings}/>
         <Route path="/vendor-messages" component={VendorMessages}/>
         <Route path="/vendor-settings" component={VendorSettings}/>
+        <Route path="/vendor-reviews" component={VendorReviews}/>
         <Route component={NotFound}/>
       </Switch>);
     }

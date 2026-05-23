@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, Scissors, CalendarCheck, MessageSquare, Settings, LogOut, Plus, Edit, Trash2 } from "lucide-react";
+import { LayoutDashboard, Scissors, CalendarCheck, MessageSquare, Settings, LogOut, Plus, Edit, Trash2, Star } from "lucide-react";
 import { useAuth } from "../hooks/use-auth";
 import { API_URL } from "../config";
 import VendorHeader from "../components/layout/VendorHeader";
@@ -119,7 +119,7 @@ export default function VendorServices() {
         setLocation("/auth");
     };
 
-    return (<div className="bg-gray-100 flex min-h-screen overflow-hidden w-full">
+    return (<div className="bg-gray-100 flex h-screen overflow-hidden w-full">
       {/* Sidebar - Same as Dashboard */}
       <aside className="w-64 bg-gradient-to-b from-blue-900 via-[#8c71af] to-pink-300 text-white flex-col hidden md:flex h-screen sticky top-0">
         <div className="p-6 text-2xl font-bold border-b border-white/20 text-center">
@@ -141,6 +141,9 @@ export default function VendorServices() {
               <span className="mr-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1">{unreadMessages}</span>
             )}
           </Link>
+          <Link href="/vendor-reviews" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
+            <Star size={20}/> آراء العملاء
+          </Link>
           <Link href="/vendor-settings" className="block p-3 rounded-xl hover:bg-white/10 transition flex items-center gap-3">
             <Settings size={20}/> الإعدادات
           </Link>
@@ -153,7 +156,7 @@ export default function VendorServices() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-y-auto w-full min-h-screen pb-12 md:pb-0">
+      <main className="flex-1 flex flex-col overflow-y-auto w-full h-full pb-12 md:pb-0">
         <VendorHeader
           title="إدارة الخدمات ✂️"
           onUnreadMessages={setUnreadMessages}
@@ -385,6 +388,9 @@ export default function VendorServices() {
         </Link>
         <Link href="/vendor-messages" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
           <MessageSquare size={20}/>
+        </Link>
+        <Link href="/vendor-reviews" className="flex flex-col items-center p-2 text-white/70 hover:text-white transition">
+          <Star size={20}/>
         </Link>
         <button onClick={handleLogout} className="flex flex-col items-center p-2 text-white/70 hover:text-red-300 transition cursor-pointer">
           <LogOut size={20}/>

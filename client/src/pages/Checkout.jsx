@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { useAuth } from "../hooks/use-auth";
+import { useBookings } from "../hooks/use-bookings";
 import { SERVICES_DATA } from "../lib/data";
 import { API_URL } from "../config";
 import { Copy, Check, UploadCloud, Loader2 } from "lucide-react";
@@ -9,13 +10,14 @@ import { useLanguage } from "../context/LanguageContext";
 export default function Checkout() {
     const { lang, t } = useLanguage();
     const { user } = useAuth();
+    const { bookings, clearBookings } = useBookings();
     
     const searchParams = new URLSearchParams(window.location.search);
     const serviceId = searchParams.get('serviceId');
     const bookingDate = searchParams.get('date') || (lang === 'ar' ? "غير محدد" : "Not specified");
     const guests = searchParams.get('guests') || "guests_100_300";
 
-    const [service, setService] = useState(null);
+    const [checkoutItems, setCheckoutItems] = useState([]);
     const [loadingService, setLoadingService] = useState(true);
 
     const [name, setName] = useState("");
@@ -67,12 +69,28 @@ export default function Checkout() {
 
     useEffect(() => {
         const fetchService = async () => {
-            if (!serviceId) return;
+            if (!serviceId) {
+                setCheckoutItems(bookings);
+                setLoadingService(false);
+                return;
+            }
             try {
                 const res = await fetch(`${API_URL}/services/${serviceId}`);
                 if (res.ok) {
                     const data = await res.json();
-                    setService(data);
+                    setCheckoutItems([{
+                        id: Date.now().toString(),
+                        serviceId: data.id,
+                        name: data.name,
+                        price: data.price,
+                        image: data.imageUrl,
+                        date: bookingDate,
+                        eventType: searchParams.get('eventType') || "booking_type_wedding",
+                        guests: guests,
+                        location: data.location || data.user?.governorate || (lang === 'ar' ? "القاهرة" : "Cairo"),
+                        vendorName: data.user ? data.user.fullName : ("إدارة " + data.name),
+                        vendorId: data.user ? data.user.id : 2
+                    }]);
                 }
             } catch (error) {
                 console.error("Error fetching service:", error);
@@ -80,7 +98,25 @@ export default function Checkout() {
             setLoadingService(false);
         };
         fetchService();
-    }, [serviceId]);
+    }, [serviceId, bookingDate, guests, bookings]);
+
+    // Parse price string helper
+    const parsePrice = (priceStr) => {
+        if (!priceStr) return 0;
+        const clean = priceStr.replace(/[^\d]/g, '');
+        return parseInt(clean, 10) || 0;
+    };
+
+    const totalPrice = checkoutItems.reduce((sum, item) => sum + parsePrice(item.price), 0);
+    const depositPrice = 2500 * checkoutItems.length;
+
+    const formattedTotal = lang === 'ar' 
+        ? `${totalPrice.toLocaleString('ar-EG')} ج.م` 
+        : `${totalPrice.toLocaleString('en-US')} EGP`;
+
+    const formattedDeposit = lang === 'ar' 
+        ? `${depositPrice.toLocaleString('ar-EG')} ج.م` 
+        : `${depositPrice.toLocaleString('en-US')} EGP`;
 
     const confirmBooking = async () => {
         if (!user) {
@@ -111,39 +147,45 @@ export default function Checkout() {
 
         setIsProcessing(true);
 
-        const bookingData = {
-            serviceId: service.id,
-            serviceName: service.name,
-            servicePrice: service.price,
-            vendorName: service.user ? service.user.fullName : ("إدارة " + service.name),
-            vendorId: service.user ? service.user.id : 2, 
-            bookingDate: bookingDate,
-            status: "PENDING",
-            paymentMethod: paymentMethod === 'instapay' ? 'INSTAPAY' : paymentMethod === 'vodafone' ? 'VODAFONE_CASH' : 'CASH',
-            transactionId: paymentMethod === 'instapay' ? (txnId || senderName) : paymentMethod === 'vodafone' ? (txnId || senderPhone) : null,
-            paymentReceiptUrl: filePreview || null
-        };
-
         try {
-            const res = await fetch(`${API_URL}/bookings/add/${user.id}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(bookingData)
-            });
+            for (const item of checkoutItems) {
+                const bookingData = {
+                    serviceId: item.serviceId,
+                    serviceName: item.name,
+                    servicePrice: item.price,
+                    vendorName: item.vendorName || ("إدارة " + item.name),
+                    vendorId: item.vendorId || 2, 
+                    bookingDate: item.date,
+                    status: "PENDING",
+                    paymentMethod: paymentMethod === 'instapay' ? 'INSTAPAY' : paymentMethod === 'vodafone' ? 'VODAFONE_CASH' : 'CASH',
+                    transactionId: paymentMethod === 'instapay' ? (txnId || senderName) : paymentMethod === 'vodafone' ? (txnId || senderPhone) : null,
+                    paymentReceiptUrl: filePreview || null
+                };
 
-            if (res.ok) {
-                setTimeout(() => {
-                    setIsProcessing(false);
-                    setIsModalOpen(true);
-                }, 2000);
-            } else {
-                setIsProcessing(false);
-                alert(t("checkout_error_booking"));
+                const res = await fetch(`${API_URL}/bookings/add/${user.id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookingData)
+                });
+
+                if (!res.ok) {
+                    throw new Error("Failed to book service: " + item.name);
+                }
             }
+
+            if (!serviceId) {
+                clearBookings();
+            }
+
+            setTimeout(() => {
+                setIsProcessing(false);
+                setIsModalOpen(true);
+            }, 1500);
+
         } catch (error) {
             console.error("Booking error:", error);
             setIsProcessing(false);
-            alert(t("checkout_error_server"));
+            alert(t("checkout_error_booking"));
         }
     };
 
@@ -160,8 +202,8 @@ export default function Checkout() {
         );
     }
 
-    if (!service) {
-        return <div className="flex-1 flex justify-center items-center py-20 font-bold text-red-500">{t("service_not_found")}</div>;
+    if (checkoutItems.length === 0) {
+        return <div className="flex-1 flex justify-center items-center py-20 font-bold text-gray-500">{lang === 'ar' ? 'لا توجد خدمات للحجز في العربة.' : 'No services to book in your cart.'}</div>;
     }
 
     return (<>
@@ -410,30 +452,31 @@ export default function Checkout() {
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 sticky top-24">
               <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">{t("checkout_summary")}</h3>
               
-              <div className="flex gap-4 mb-4">
-                <img src={service.imageUrl || "https://via.placeholder.com/500"} className="w-16 h-16 rounded-lg object-cover" alt="Service"/>
-                <div className="text-start">
-                  <h4 className="font-bold text-sm">{service.name}</h4>
-                  <p className="text-gray-500 text-xs">{service.location || (lang === 'ar' ? 'القاهرة' : 'Cairo')}</p>
-                </div>
+              <div className="space-y-4 max-h-60 overflow-y-auto mb-4 pr-1">
+                {checkoutItems.map((item) => (
+                  <div key={item.id} className="flex gap-3 border-b border-gray-50 pb-3">
+                    <img src={item.image || "https://via.placeholder.com/150"} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" alt="Service"/>
+                    <div className="text-start flex-1 min-w-0 text-xs">
+                      <h4 className="font-bold text-gray-800 truncate" title={item.name}>{t(item.name)}</h4>
+                      <p className="text-gray-400 text-[10px] truncate">📍 {t(item.location || 'القاهرة')}</p>
+                      <div className="flex gap-2 text-[9px] text-gray-500 mt-1 flex-wrap font-semibold">
+                        <span>📅 {item.date}</span>
+                        <span>👥 {getLocalizedGuests(item.guests)}</span>
+                      </div>
+                      <p className="text-[#8c71af] font-bold text-[10px] mt-1">{item.price}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="space-y-3 text-sm text-gray-600 mb-6">
-                <div className="flex justify-between">
-                  <span>{t("checkout_summary_date")}</span>
-                  <span className="font-bold text-gray-800">{bookingDate}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>{t("checkout_summary_guests")}</span>
-                  <span className="font-bold text-gray-800">{getLocalizedGuests(guests)}</span>
-                </div>
                 <div className="flex justify-between pt-3 border-t">
                   <span>{t("checkout_summary_total")}</span>
-                  <span className="font-bold">{(service.price || "").replace("ج.م", lang === 'ar' ? "ج.م" : "EGP")}</span>
+                  <span className="font-bold text-gray-800">{formattedTotal}</span>
                 </div>
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-green-600 font-bold">
                   <span>{t("checkout_summary_deposit")}</span>
-                  <span className="font-bold">{t("checkout_summary_deposit_val")}</span>
+                  <span>{formattedDeposit}</span>
                 </div>
               </div>
 
@@ -443,7 +486,7 @@ export default function Checkout() {
 
               <button 
                 onClick={confirmBooking} 
-                disabled={isProcessing}
+                disabled={isProcessing || checkoutItems.length === 0}
                 className="w-full bg-gradient-primary text-white py-4 rounded-xl font-bold shadow-md hover:opacity-90 transition transform hover:-translate-y-1 flex items-center justify-center gap-2"
               >
                 {isProcessing ? (
@@ -452,7 +495,7 @@ export default function Checkout() {
                     {t("checkout_btn_processing")}
                   </>
                 ) : (
-                  t("checkout_btn_confirm")
+                  lang === 'ar' ? `تأكيد الحجز (${formattedDeposit})` : `Confirm Booking (${formattedDeposit})`
                 )}
               </button>
               

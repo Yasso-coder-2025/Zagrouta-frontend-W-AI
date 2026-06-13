@@ -196,6 +196,24 @@ const translations = {
     checkout_success_home_btn: "العودة للرئيسية",
     loading_checkout: "جاري تجهيز بيانات الدفع... ✨",
     loading_checkout_sub: "دقائق وبنحضرلك تفاصيل الدفع الآمنة",
+
+    // Contact Page
+    contact_title: "يسعدنا سماع صوتك! 📞",
+    contact_subtitle: "عندك استفسار عن حجز؟ أو عايز تنضم لينا كمورد؟ فريق زغروطة موجود عشان يساعدك في أي وقت.",
+    contact_name: "الاسم بالكامل",
+    contact_phone: "رقم للتواصل",
+    contact_subject: "الموضوع",
+    contact_subject_booking: "استفسار عن حجز",
+    contact_subject_technical: "مشكلة تقنية في الموقع",
+    contact_subject_suggestions: "اقتراحات",
+    contact_subject_other: "أخرى",
+    contact_message: "رسالتك",
+    contact_message_placeholder: "اكتبي تفاصيل استفسارك هنا...",
+    contact_send: "إرسال الرسالة",
+    contact_address_title: "عنواننا",
+    contact_address_val: "القاهرة، المعادي، شارع 9",
+    contact_email_title: "البريد الإلكتروني",
+    contact_whatsapp_title: "واتساب",
   },
   en: {
     // Navbar
@@ -392,7 +410,90 @@ const translations = {
     checkout_success_home_btn: "Back to Home",
     loading_checkout: "Preparing payment details... ✨",
     loading_checkout_sub: "Just a moment while we set up secure payment details",
+
+    // Contact Page
+    contact_title: "We'd love to hear from you! 📞",
+    contact_subtitle: "Have a question about a booking? Or want to join us as a vendor? The Zagrouta team is here to help you at any time.",
+    contact_name: "Full Name",
+    contact_phone: "Phone Number",
+    contact_subject: "Subject",
+    contact_subject_booking: "Booking Inquiry",
+    contact_subject_technical: "Technical Issue",
+    contact_subject_suggestions: "Suggestions",
+    contact_subject_other: "Other",
+    contact_message: "Your Message",
+    contact_message_placeholder: "Write the details of your inquiry here...",
+    contact_send: "Send Message",
+    contact_address_title: "Our Address",
+    contact_address_val: "Cairo, Maadi, Street 9",
+    contact_email_title: "Email",
+    contact_whatsapp_title: "WhatsApp",
   }
+};
+
+const serviceTranslations = {
+  // Service Names
+  "قاعة الماسة": "Al-Masa Venue",
+  "فستان سندريلا": "Cinderella Dress",
+  "سارة ميك أب": "Sarah Makeup",
+  "قاعة فيرونا": "Verona Venue",
+  "أتيليه ليلة العمر": "Laylat El-Omr Atelier",
+  "نورا فوتوغرافي": "Noura Photography",
+  "فستان زفاف ملكي": "Royal Wedding Dress",
+  "فستان سندريلا تركي": "Turkish Cinderella Dress",
+  "فستان سمبل أبيض": "Simple White Dress",
+  "فستان بتطريز لؤلؤ": "Pearl Embroidered Dress",
+  "فستان زفاف كلاسيكي": "Classical Wedding Dress",
+  "فستان زفاف مودرن": "Modern Wedding Dress",
+  "فستان منفوش أنيق": "Elegant Fluffy Dress",
+  "فستان زفاف دانتيل": "Lace Wedding Dress",
+  "فستان زفاف بسيط": "Simple Wedding Dress",
+  "قاعة أوبرا هاوس": "Opera House Venue",
+  "فيلا كليوباترا": "Cleopatra Villa",
+  "قاعة اللؤلؤة": "Pearl Venue",
+  "نادي حرس الحدود": "Border Guards Club",
+  "قصر الأهرامات": "Pyramids Palace",
+  "ريتز كارلتون النيل": "Nile Ritz Carlton",
+  "رويال جاردنز": "Royal Gardens",
+  "مروة عادل ميك أب": "Marwa Adel Makeup",
+  "دينا راشد استوديو": "Dina Rashed Studio",
+  "زينب علي": "Zainab Ali",
+  "نوران أحمد ميك أب": "Nouran Ahmed Makeup",
+  "ميادة محمود": "Mayada Mahmoud",
+  "أحمد فوتوغرافي": "Ahmed Photography",
+  "ستوديو العدسة الذهبية": "Golden Lens Studio",
+  "إسلام فوتو سيشن": "Islam Photosession",
+  "ستوديو اللحظة": "The Moment Studio",
+  "كاميرا زفاف": "Wedding Camera",
+
+  // Locations / Governorates
+  "القاهرة": "Cairo",
+  "مدينة نصر، القاهرة": "Nasr City, Cairo",
+  "التجمع الخامس": "Fifth Settlement",
+  "المهندسين": "Mohandessin",
+  "المعادي، القاهرة": "Maadi, Cairo",
+  "مصر الجديدة": "Heliopolis",
+  "مدينة نصر": "Nasr City",
+  "المعادي": "Maadi",
+  "الشيخ زايد": "Sheikh Zayed",
+  "الزمالك": "Zamalek",
+  "هيليوبوليس": "Heliopolis",
+  "الدقي": "Dokki",
+  "التجمع الأول": "First Settlement",
+  "الهرم، الجيزة": "Haram, Giza",
+  "الهرم": "Haram",
+  "وسط البلد": "Downtown",
+  "الجيزة": "Giza",
+  "شيراتون المطار، خلف نادي النصر": "Sheraton Airport, behind El-Nasr Club",
+  "زينب علي - المعادي": "Zainab Ali - Maadi",
+  "شيراتون المطار": "Sheraton Airport",
+  "القاهرة، المعادي، شارع 9": "Cairo, Maadi, Street 9",
+  
+  // Vendor / Admin names
+  "ياسين هشام": "Yassin Hesham",
+  "إدارة ياسين هشام": "Yassin Hesham Management",
+  "إدارة الخدمة": "Service Management",
+  "إدارة زينب علي": "Zainab Ali Management"
 };
 
 const LanguageContext = createContext();
@@ -401,6 +502,8 @@ export function LanguageProvider({ children }) {
   const [lang, setLang] = useState(() => {
     return localStorage.getItem("lang") || "ar";
   });
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionMessage, setTransitionMessage] = useState("");
 
   useEffect(() => {
     // Save to localStorage
@@ -412,16 +515,41 @@ export function LanguageProvider({ children }) {
   }, [lang]);
 
   const toggleLanguage = () => {
-    setLang((prev) => (prev === "ar" ? "en" : "ar"));
+    setTransitionMessage(lang === "ar" ? "Switching to English... ✨" : "جاري التحويل للعربية... ✨");
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setLang((prev) => (prev === "ar" ? "en" : "ar"));
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 450);
+    }, 500);
   };
 
   const t = (key) => {
-    return translations[lang]?.[key] || translations["ar"]?.[key] || key;
+    if (!key) return "";
+    if (translations[lang]?.[key] !== undefined) {
+      return translations[lang]?.[key];
+    }
+    if (lang === "en" && serviceTranslations[key] !== undefined) {
+      return serviceTranslations[key];
+    }
+    return translations["ar"]?.[key] || key;
   };
 
   return (
     <LanguageContext.Provider value={{ lang, toggleLanguage, t }}>
       {children}
+      {isTransitioning && (
+        <div className="fixed inset-0 z-[9999] bg-white/70 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-300">
+          <div className="relative w-16 h-16">
+            <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-[#8c71af] animate-spin" style={{ animationDuration: '1.2s' }}></div>
+            <div className="absolute inset-2 rounded-full border-4 border-b-transparent border-pink-300 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.8s' }}></div>
+          </div>
+          <p className="text-[#8c71af] font-bold mt-4 animate-pulse text-sm">
+            {transitionMessage}
+          </p>
+        </div>
+      )}
     </LanguageContext.Provider>
   );
 }

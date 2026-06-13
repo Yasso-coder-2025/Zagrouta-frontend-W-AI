@@ -82,16 +82,16 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="container mx-auto px-6 pb-20">
-        <div className="fade-in-up" style={{ animationDelay: '0.2s' }}>
+      <section className="w-full pb-20">
+        <div className="fade-in-up px-6" style={{ animationDelay: '0.2s' }}>
           <img 
             src="/hero-banner.jpg" 
             alt={lang === 'ar' ? "كل خدمات زفافك في مكان واحد" : "All your wedding services in one place"} 
-            className="w-full max-w-5xl mx-auto rounded-[2rem] shadow-2xl object-cover hover:scale-[1.02] transition-transform duration-500 border-4 border-white/50 cursor-pointer" 
+            className="w-full max-w-4xl mx-auto rounded-[2rem] shadow-2xl object-cover hover:scale-[1.02] transition-transform duration-500 border-4 border-white/50 cursor-pointer" 
           />
         </div>
 
-        <div className="mt-12 fade-in-up" style={{ animationDelay: '0.4s' }}>
+        <div className="mt-12 fade-in-up px-4 md:px-8" style={{ animationDelay: '0.4s' }}>
           <video 
             src="/lv_0_20260503135454.mp4" 
             autoPlay 
@@ -99,7 +99,7 @@ export default function Home() {
             muted 
             playsInline
             controls
-            className="w-full max-w-5xl mx-auto rounded-[2rem] shadow-2xl object-cover hover:scale-[1.02] transition-transform duration-500 border-4 border-white/50" 
+            className="w-full rounded-[2rem] shadow-2xl object-cover hover:scale-[1.01] transition-transform duration-500 border-4 border-white/50" 
           />
         </div>
       </section>

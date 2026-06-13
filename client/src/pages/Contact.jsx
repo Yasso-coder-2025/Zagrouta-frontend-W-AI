@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Send, MessageSquare, MessageCircle } from "lucide-react";
 import { CustomSelect } from "../components/ui/CustomSelect";
 import { useAuth } from "../hooks/use-auth";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function Contact() {
+    const { lang, t } = useLanguage();
     const { user } = useAuth();
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
@@ -14,12 +16,13 @@ export default function Contact() {
             setPhone(user.phone?.replace('+20', '') || "");
         }
     }, [user]);
+
     return (<div className="bg-gray-50 text-gray-800 flex-1 flex flex-col w-full h-full">
       <main className="container mx-auto px-4 py-12 flex-1">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">يسعدنا سماع صوتك! 📞</h1>
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">{t("contact_title")}</h1>
           <p className="text-gray-600 max-w-xl mx-auto">
-            عندك استفسار عن حجز؟ أو عايز تنضم لينا كمورد؟ فريق زغروطة موجود عشان يساعدك في أي وقت.
+            {t("contact_subtitle")}
           </p>
         </div>
 
@@ -29,72 +32,77 @@ export default function Contact() {
             <form className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold mb-2">الاسم بالكامل</label>
+                  <label className="block text-sm font-semibold mb-2">{t("contact_name")}</label>
                   <input 
                     type="text" 
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="مثلاً: سارة أحمد" 
-                    className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"
+                    placeholder={lang === 'ar' ? "مثلاً: سارة أحمد" : "e.g., Sarah Ahmed"} 
+                    className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus:outline-none transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-2">رقم للتواصل</label>
+                  <label className="block text-sm font-semibold mb-2">{t("contact_phone")}</label>
                   <input 
                     type="tel" 
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="01XXXXXXXXX" 
-                    className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"
+                    className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus:outline-none transition"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-2">الموضوع</label>
+                <label className="block text-sm font-semibold mb-2">{t("contact_subject")}</label>
                 <CustomSelect
-                  defaultValue="استفسار عن حجز"
-                  options={["استفسار عن حجز", "مشكلة تقنية في الموقع", "اقتراحات", "أخرى"]}
+                  defaultValue="contact_subject_booking"
+                  options={[
+                    { value: "contact_subject_booking", label: t("contact_subject_booking") },
+                    { value: "contact_subject_technical", label: t("contact_subject_technical") },
+                    { value: "contact_subject_suggestions", label: t("contact_subject_suggestions") },
+                    { value: "contact_subject_other", label: t("contact_subject_other") }
+                  ]}
                   className="p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] text-gray-700 font-bold hover:border-[#8c71af] transition"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-2">رسالتك</label>
-                <textarea rows={5} placeholder="اكتبي تفاصيل استفسارك هنا..." className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus: outline-none transition"></textarea>
+                <label className="block text-sm font-semibold mb-2">{t("contact_message")}</label>
+                <textarea rows={5} placeholder={t("contact_message_placeholder")} className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] focus:outline-none transition"></textarea>
               </div>
               <button type="button" className="w-full bg-gradient-primary text-white py-4 rounded-xl font-bold shadow-lg hover:opacity-90 transition transform hover:scale-[1.02]">
-                إرسال الرسالة
+                {t("contact_send")}
               </button>
             </form>
           </div>
 
           {/* Contact Info */}
           <div className="space-y-8">
-            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 ">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-pink-50 rounded-full flex items-center justify-center text-[#8c71af]">
+            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 border-[#8c71af]">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-pink-50 rounded-full flex items-center justify-center text-[#8c71af] shrink-0">
                 <MapPin size={28}/>
               </div>
-              <div>
-                <h3 className="font-bold text-lg">عنواننا</h3>
-                <p className="text-gray-500">القاهرة، المعادي، شارع 9</p>
+              <div className="text-start">
+                <h3 className="font-bold text-lg">{t("contact_address_title")}</h3>
+                <p className="text-gray-500">{t("contact_address_val")}</p>
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 ">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-pink-50 rounded-full flex items-center justify-center text-[#8c71af]">
+            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 border-[#8c71af]">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-pink-50 rounded-full flex items-center justify-center text-[#8c71af] shrink-0">
                 <Mail size={28}/>
               </div>
-              <div>
-                <h3 className="font-bold text-lg">البريد الإلكتروني</h3>
+              <div className="text-start">
+                <h3 className="font-bold text-lg">{t("contact_email_title")}</h3>
                 <p className="text-gray-500">support@zaghrouta.com</p>
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 ">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-pink-50 rounded-full flex items-center justify-center text-[#8c71af]">
+            <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-6 border-r-4 border-[#8c71af]">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-pink-50 rounded-full flex items-center justify-center text-[#8c71af] shrink-0">
                 <MessageCircle size={28}/>
               </div>
-              <div>
-                <h3 className="font-bold text-lg">واتساب</h3>
+              <div className="text-start">
+                <h3 className="font-bold text-lg">{t("contact_whatsapp_title")}</h3>
                 <p className="text-gray-500">0123-456-7890</p>
               </div>
             </div>

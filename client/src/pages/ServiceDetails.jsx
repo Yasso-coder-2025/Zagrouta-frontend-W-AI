@@ -3,11 +3,13 @@ import { Link, useParams, useLocation } from "wouter";
 import { CustomSelect } from "../components/ui/CustomSelect";
 import { API_URL } from "../config";
 import { useAuth } from "../hooks/use-auth";
+import { useBookings } from "../hooks/use-bookings";
 import { Facebook, Instagram } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 
 export default function ServiceDetails() {
     const { lang, t } = useLanguage();
+    const { addBooking, setCartOpen } = useBookings();
     const { id } = useParams();
     const { user } = useAuth();
     const [, setLocation] = useLocation();
@@ -18,6 +20,7 @@ export default function ServiceDetails() {
     const [chatMessage, setChatMessage] = useState("");
     const [chatSent, setChatSent] = useState(false);
     const [chatSending, setChatSending] = useState(false);
+    const [isLoginPromptOpen, setIsLoginPromptOpen] = useState(false);
 
     // Reviews State
     const [reviews, setReviews] = useState([]);
@@ -140,11 +143,11 @@ export default function ServiceDetails() {
                 await fetchReviews();
             } else {
                 const errData = await res.json().catch(() => ({}));
-                setSubmitError(errData.message || "حدث خطأ أثناء إضافة التقييم. حاول مرة أخرى.");
+                setSubmitError(errData.message || (lang === 'ar' ? "حدث خطأ أثناء إضافة التقييم. حاول مرة أخرى." : "An error occurred while adding the review. Please try again."));
             }
         } catch (error) {
             console.error("Error submitting review:", error);
-            setSubmitError("فشل الاتصال بالخادم. تأكد من اتصالك بالإنترنت.");
+            setSubmitError(lang === 'ar' ? "فشل الاتصال بالخادم. تأكد من اتصالك بالإنترنت." : "Server connection failed. Make sure you are connected to the internet.");
         } finally {
             setIsSubmittingReview(false);
         }
@@ -207,6 +210,26 @@ export default function ServiceDetails() {
         } finally {
             setChatSending(false);
         }
+    };
+
+    const handleAddToCart = () => {
+        if (!user) {
+            setIsLoginPromptOpen(true);
+            return;
+        }
+        if (!bookingDate || !service) return;
+        addBooking({
+            serviceId: service.id,
+            name: service.name,
+            price: service.price,
+            image: service.image,
+            date: bookingDate,
+            eventType: eventType,
+            guests: guests,
+            location: service.location,
+            vendorName: service.vendorName
+        });
+        setCartOpen(true);
     };
 
     if (loading) {
@@ -335,7 +358,7 @@ export default function ServiceDetails() {
             {/* Gallery */}
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
               <div className="h-[400px] overflow-hidden rounded-xl mb-4 relative group">
-                <img src={mainImage} className={`w-full h-full object-cover transition-opacity duration-300 ${animateImage ? 'opacity-50' : 'opacity-100'}`} alt={service.name}/>
+                <img src={mainImage} className={`w-full h-full object-cover transition-opacity duration-300 ${animateImage ? 'opacity-50' : 'opacity-100'}`} alt={t(service.name)}/>
                 <span className="absolute top-4 right-4 bg-gradient-primary text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">{service.typeLabel} {t("featured_label")}</span>
               </div>
               <div className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
@@ -347,8 +370,8 @@ export default function ServiceDetails() {
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-800 mb-2">{service.name}</h1>
-                  <p className="text-gray-500 flex items-center gap-2">📍 {service.location} - {service.address}</p>
+                  <h1 className="text-3xl font-bold text-gray-800 mb-2">{t(service.name)}</h1>
+                  <p className="text-gray-500 flex items-center gap-2">📍 {t(service.location)} - {t(service.address)}</p>
                 </div>
                 <div className="flex flex-col items-end">
                   {reviewsCount > 0 ? (
@@ -425,10 +448,10 @@ export default function ServiceDetails() {
               <div className="border-t border-gray-100 pt-8 mt-8">
                 {user ? (
                   <form onSubmit={handleReviewSubmit} className="space-y-4">
-                    <h4 className="text-lg font-bold text-gray-800">اكتبي رأيك وتجربتك</h4>
+                    <h4 className="text-lg font-bold text-gray-800">{t("write_review")}</h4>
                     
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-gray-700">تقييمك بالنجوم:</span>
+                      <span className="text-sm font-bold text-gray-700">{t("star_rating_label")}</span>
                       <div className="flex gap-1 text-2xl">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <button
@@ -451,7 +474,7 @@ export default function ServiceDetails() {
                       <textarea
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
-                        placeholder="شاركينا تفاصيل تجربتك مع هذا المورد..."
+                        placeholder={t("review_placeholder")}
                         rows={3}
                         className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#8c71af]/30 focus:border-[#8c71af] resize-none transition font-medium"
                         required
@@ -464,15 +487,15 @@ export default function ServiceDetails() {
                       disabled={isSubmittingReview || !newComment.trim()}
                       className="bg-gradient-primary text-white px-6 py-3 rounded-xl font-bold shadow-md hover:opacity-90 transition disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                     >
-                      {isSubmittingReview ? "جاري الإضافة..." : "إضافة تقييمك القيم ✨"}
+                      {isSubmittingReview ? t("adding_review") : t("btn_add_review")}
                     </button>
                   </form>
                 ) : (
                   <div className="bg-gray-50/50 border border-dashed border-gray-200 rounded-2xl p-6 text-center">
-                    <p className="text-gray-600 text-sm mb-3">سجلي دخولك لتشاركينا رأيك وتقييمك للمورد!</p>
+                    <p className="text-gray-600 text-sm mb-3">{t("login_review_prompt")}</p>
                     <Link href="/auth">
                       <button className="bg-gradient-primary text-white px-6 py-2.5 rounded-xl font-bold shadow-md hover:opacity-90 transition">
-                        تسجيل الدخول / إنشاء حساب
+                        {t("login_btn")}
                       </button>
                     </Link>
                   </div>
@@ -534,15 +557,14 @@ export default function ServiceDetails() {
                 </div>
 
                 <div className="flex flex-col gap-3 mt-4">
-                  <Link href={`/checkout?serviceId=${service.id}&date=${bookingDate}&eventType=${eventType}&guests=${guests}`}>
-                    <button 
-                      type="button" 
-                      disabled={!bookingDate} 
-                      className="w-full bg-gradient-primary text-white py-3.5 rounded-xl font-bold shadow-md hover:opacity-95 hover:shadow-lg transition transform hover:-translate-y-0.5 flex justify-center items-center gap-2 text-base disabled:opacity-50 disabled:transform-none cursor-pointer"
-                    >
-                      <span>📅</span> {t("btn_book")}
-                    </button>
-                  </Link>
+                  <button 
+                    type="button" 
+                    onClick={handleAddToCart}
+                    disabled={!bookingDate} 
+                    className="w-full bg-gradient-primary text-white py-3.5 rounded-xl font-bold shadow-md hover:opacity-95 hover:shadow-lg transition transform hover:-translate-y-0.5 flex justify-center items-center gap-2 text-base disabled:opacity-50 disabled:transform-none cursor-pointer"
+                  >
+                    <span>🛒</span> {lang === 'ar' ? 'إضافة إلى العربة' : 'Add to Cart'}
+                  </button>
 
                   <button
                     type="button"
@@ -558,9 +580,9 @@ export default function ServiceDetails() {
                 <p className="text-xs text-gray-400 mb-3">{t("verified_vendor")}</p>
                 <div className="flex items-center justify-center gap-3">
                   <img src={service.logoUrl} className="w-12 h-12 rounded-full object-cover border-2 border-pink-100 shadow-sm" alt="Vendor Logo"/>
-                  <div className="text-right">
+                  <div className="text-start">
                     <p className="text-sm font-bold text-gray-800">
-                      {lang === 'ar' ? `إدارة ${service.vendorName || service.name}` : `${service.vendorName || service.name} Admin`}
+                      {lang === 'ar' ? `إدارة ${t(service.vendorName || service.name)}` : t(service.vendorName || service.name)}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <p className="text-xs text-gray-500">{t("fast_response")}</p>
@@ -589,10 +611,10 @@ export default function ServiceDetails() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {allServices.filter(s => s.category === service.category && s.id !== service.id).slice(0, 3).map(similar => (
                 <Link key={similar.id} href={`/services/${similar.id}`} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition block">
-                <img src={similar.image} className="h-40 w-full object-cover" alt={similar.name}/>
+                <img src={similar.image} className="h-40 w-full object-cover" alt={t(similar.name)}/>
                 <div className="p-4">
-                    <h3 className="font-bold text-gray-800 truncate">{similar.name}</h3>
-                    <p className="text-gradient-primary font-bold text-sm">{similar.price}</p>
+                    <h3 className="font-bold text-gray-800 truncate">{t(similar.name)}</h3>
+                    <p className="text-gradient-primary font-bold text-sm">{similar.price.replace("ج.م", lang === 'ar' ? "ج.م" : "EGP")}</p>
                 </div>
                 </Link>
             ))}
@@ -635,6 +657,40 @@ export default function ServiceDetails() {
                   </button>
                 </>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Login Prompt Modal */}
+      {isLoginPromptOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setIsLoginPromptOpen(false)}>
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full text-center relative overflow-hidden shadow-2xl animate-payment-fade" onClick={(e) => e.stopPropagation()}>
+            <div className="absolute inset-0 pointer-events-none opacity-5 bg-[url('https://www.transparenttextures.com/patterns/confetti.png')]"></div>
+            <div className="w-16 h-16 bg-pink-50 text-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner animate-pulse">
+              🔒
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              {lang === 'ar' ? 'تسجيل الدخول مطلوب' : 'Login Required'}
+            </h3>
+            <p className="text-xs text-gray-500 mb-6 leading-relaxed font-semibold">
+              {lang === 'ar' 
+                ? 'يرجى تسجيل الدخول أولاً لتتمكني من إضافة الخدمات لعربة التسوق وإتمام حجز ليلة العمر!' 
+                : 'Please log in first to be able to add services to your shopping cart and complete your bookings!'}
+            </p>
+            <div className="flex flex-col gap-2">
+              <button 
+                onClick={() => { setIsLoginPromptOpen(false); setLocation("/auth"); }}
+                className="w-full bg-gradient-primary text-white py-3 rounded-xl font-bold hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer text-sm shadow-md"
+              >
+                {lang === 'ar' ? 'تسجيل الدخول / إنشاء حساب' : 'Login / Create Account'}
+              </button>
+              <button 
+                onClick={() => setIsLoginPromptOpen(false)}
+                className="w-full bg-gray-50 hover:bg-gray-100 hover:scale-[1.02] active:scale-[0.98] text-gray-500 py-3 rounded-xl font-bold transition-all cursor-pointer text-sm border border-gray-100"
+              >
+                {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+              </button>
             </div>
           </div>
         </div>

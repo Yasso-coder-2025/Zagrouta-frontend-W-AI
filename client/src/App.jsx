@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "./context/LanguageContext";
 import NotFound from "@/pages/not-found";
 import Navbar from "@/components/layout/Navbar";
+import CartDrawer from "@/components/layout/CartDrawer";
+import AiAssistant from "@/components/layout/AiAssistant";
 import Footer from "@/components/layout/Footer";
 import Home from "@/pages/Home";
 import Services from "@/pages/Services";
@@ -38,6 +40,8 @@ function Router() {
     }
     return (<div className="flex flex-col min-h-screen w-full">
       <Navbar />
+      <CartDrawer />
+      <AiAssistant />
       <main className="flex-1 flex flex-col w-full">
         <Switch>
           <Route path="/" component={Home}/>

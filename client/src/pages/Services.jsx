@@ -317,7 +317,7 @@ export default function Services() {
             ) : paginatedServices.length > 0 ? (
               paginatedServices.map((service) => (<div key={service.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group border border-gray-100 flex flex-col">
                 <div className="relative h-56 bg-gray-200 overflow-hidden">
-                  <img src={service.image} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt={service.name}/>
+                  <img src={service.image} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt={t(service.name)}/>
                   <span className="absolute top-3 right-3 bg-white/90 text-gray-800 px-3 py-1 rounded-full text-xs font-bold shadow-sm">{service.typeLabel}</span>
                   <button onClick={(e) => toggleFavoriteBtn(e, service.id)} className="absolute top-3 left-3 bg-white/50 hover:bg-white p-2 rounded-full transition text-red-500">
                     {favorites.includes(service.id) ? '❤️' : '🤍'}
@@ -325,14 +325,14 @@ export default function Services() {
                 </div>
                 <div className="p-5 flex-1 flex flex-col">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg text-gray-800 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l group-hover:from-blue-900 group-hover:via-[#8c71af] group-hover:to-pink-300 transition">{service.name}</h3>
+                    <h3 className="font-bold text-lg text-gray-800 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l group-hover:from-blue-900 group-hover:via-[#8c71af] group-hover:to-pink-300 transition">{t(service.name)}</h3>
                     <div className="flex items-center gap-1 text-yellow-400 text-sm font-bold">⭐ {service.rating}</div>
                   </div>
-                  <p className="text-gray-500 text-sm mb-4 flex items-center gap-1">📍 {service.location}</p>
+                  <p className="text-gray-500 text-sm mb-4 flex items-center gap-1">📍 {t(service.location)}</p>
                   <div className="mt-auto flex justify-between items-center border-t pt-4">
                     <div>
                       <span className="block text-xs text-gray-400">{service.priceLabel}</span>
-                      <span className="font-bold text-gradient-primary text-lg">{service.price}</span>
+                      <span className="font-bold text-gradient-primary text-lg">{service.price.replace("ج.م", lang === 'ar' ? "ج.م" : "EGP")}</span>
                     </div>
                     <Link href={`/services/${service.id}`} className="bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-gradient-to-br hover:from-blue-900 hover:to-[#8c71af] transition shadow hover:shadow-md transform hover:-translate-y-0.5">
                       {t("btn_details")}

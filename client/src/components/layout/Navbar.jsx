@@ -18,6 +18,7 @@ export default function Navbar() {
   const [deletedNotifications, setDeletedNotifications] = useState(new Set());
   const [unreadMsgCount, setUnreadMsgCount] = useState(0);
   const notificationsRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   // جيب عدد الرسائل غير المقروءة للعميل
   useEffect(() => {
@@ -47,6 +48,18 @@ export default function Navbar() {
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isNotificationsOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isDropdownOpen]);
 
   const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMenu = () => {
@@ -221,7 +234,7 @@ export default function Navbar() {
                   )}
 
                   {/* User Dropdown */}
-                  <div className="relative">
+                  <div className="relative" ref={dropdownRef}>
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                       className="text-gray-700 font-bold px-4 flex items-center gap-2 hover-text-gradient-primary transition cursor-pointer"

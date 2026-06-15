@@ -217,7 +217,7 @@ export default function Auth() {
             <Link href="/">
               <h1 className="text-3xl font-bold mb-2 cursor-pointer">زغروطة</h1>
             </Link>
-            <p className="text-white/90">نورّتي بيتك التاني، يا ريتنا نكون جزء من فرحتك!</p>
+            <p className="text-white/90">نورت/ي بيتك التاني، يا ريتنا نكون جزء من فرحتك!</p>
           </div>
 
           <div className="flex border-b ">
@@ -349,7 +349,7 @@ export default function Auth() {
                     required
                     value={signupName}
                     onChange={(e) => setSignupName(e.target.value)}
-                    placeholder="اكتبي اسمك هنا" 
+                    placeholder="اكتب/ي اسمك هنا" 
                     className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus: focus:ring-2 focus:ring-[#8c71af] outline-none transition"
                   />
                 </div>
@@ -360,7 +360,7 @@ export default function Auth() {
                     onChange={(e) => setSignupRole(e.target.value)}
                     options={[
                       { value: "CUSTOMER", label: "عروسة / عريس (مستخدم)" },
-                      { value: "VENDOR", label: "مورد خدمات (صاحب قاعة/أتيليه)" }
+                      { value: "VENDOR", label: "مورد خدمات (صاحب قاعة/أتيليه...الخ)" }
                     ]}
                     className="p-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#8c71af] font-bold text-gray-700 hover:border-[#8c71af] transition"
                   />
